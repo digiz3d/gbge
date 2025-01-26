@@ -32,7 +32,7 @@ func grid(gtx layout.Context, _ *material.Theme, x int, y int) layout.Dimensions
 
 	tr := op.Offset(image.Pt(lineWidth+centerOffsetX, lineWidth+centerOffsetY)).Push(gtx.Ops)
 
-	rectangleOffset := op.Offset(image.Pt(-1, -1)).Push(gtx.Ops)
+	rectangleOffset := op.Offset(image.Pt(-lineWidth, -lineWidth)).Push(gtx.Ops)
 	drawRectangle(gtx, image.Pt(totalTilesWidth+lineWidth*2, totalTilesHeight+lineWidth*2), black)
 	rectangleOffset.Pop()
 
