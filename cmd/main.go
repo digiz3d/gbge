@@ -8,7 +8,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/unit"
 	"gioui.org/widget/material"
-	layout "github.com/digiz3d/gbge/components/layout"
+	"github.com/digiz3d/gbge/components"
 )
 
 const windowWidth = 800
@@ -43,7 +43,7 @@ func run(window *app.Window) error {
 			return e.Err
 		case app.FrameEvent:
 			gtx := app.NewContext(&ops, e)
-			layout.MainWindow(gtx, theme)
+			components.MainWindow(gtx, theme)
 			e.Frame(gtx.Ops)
 		}
 	}
