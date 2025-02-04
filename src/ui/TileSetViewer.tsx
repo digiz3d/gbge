@@ -35,12 +35,13 @@ export function TileSetViewer() {
       {tiles.map((tileAtom, i) => {
         return (
           <div
+            key={`${tileAtom}`}
             className={`ring ${
               selectedTile === i ? "filter contrast-150 " : ""
             }`}
             onClick={() => setSelectedTile(i)}
           >
-            <TileViewerButSmall tileAtom={tileAtom} key={`${tileAtom}`} />
+            <TileViewerButSmall tileAtom={tileAtom} />
           </div>
         );
       })}
