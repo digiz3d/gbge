@@ -1,11 +1,12 @@
-import { useAtomValue, useSetAtom } from "jotai";
 import {
   Color,
-  selectedTabIndex,
-  selectTileIndex,
-  setPixelColor,
-  tileSets,
+  selectedTabIndexAtom,
+  selectTileIndexAtom,
+  tileSetsAtom,
 } from "../state";
+import { focusAtom } from "jotai-optics";
+import { useAtom, useAtomValue } from "jotai";
+import { useMemo } from "react";
 
 const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 155, g: 188, b: 15 },
@@ -14,33 +15,21 @@ const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 15, g: 36, b: 15 }, // original { r: 15, g: 56, b: 15 }
 ];
 
-export function TileViewer({ small = false }: { small: boolean }) {
-  const sets = useAtomValue(tileSets);
-  const selectedTab = useAtomValue(selectedTabIndex);
-  const x = sets[selectedTab];
-  const selectedTile = useAtomValue(selectTileIndex);
-  const tile = x.tiles[selectedTile];
+export function TileViewer() {
+  const tab = useAtomValue(selectedTabIndexAtom);
+  const index = useAtomValue(selectTileIndexAtom);
 
-  const setPixel = useSetAtom(setPixelColor);
+  const [tile, setTile] = useAtom(
+    useMemo(
+      () =>
+        focusAtom(tileSetsAtom, (optic) =>
+          optic.index(tab).prop("tiles").index(index)
+        ),
+      [tab, index]
+    )
+  );
 
-  if (small) {
-    return (
-      <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit">
-        {tile.map((pixel, i) => (
-          <div
-            className="h-[8px] w-[8px]"
-            key={i}
-            onClick={() =>
-              setPixel(selectedTab, selectedTile, i, ((pixel + 1) % 4) as Color)
-            }
-            style={{
-              backgroundColor: `rgba(${colorPalette[pixel].r}, ${colorPalette[pixel].g},${colorPalette[pixel].b})`,
-            }}
-          />
-        ))}
-      </div>
-    );
-  }
+  if (!tile) return null;
 
   return (
     <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit">
@@ -48,9 +37,11 @@ export function TileViewer({ small = false }: { small: boolean }) {
         <div
           className="h-[32px] w-[32px] ring"
           key={i}
-          onClick={() =>
-            setPixel(selectedTab, selectedTile, i, ((pixel + 1) % 4) as Color)
-          }
+          onClick={() => {
+            const clonedTile = [...tile];
+            clonedTile[i] = ((pixel + 1) % 4) as Color;
+            setTile(clonedTile);
+          }}
           style={{
             backgroundColor: `rgba(${colorPalette[pixel].r}, ${colorPalette[pixel].g},${colorPalette[pixel].b})`,
           }}

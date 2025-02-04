@@ -1,16 +1,38 @@
 import { useAtom, useAtomValue } from "jotai";
-import { selectedTabIndex, selectTileIndex, tileSets } from "../state";
+import {
+  selectedTabIndexAtom,
+  selectTileIndexAtom,
+  Tile,
+  tileSetsAtom,
+} from "../state";
 import { TileViewerButSmall } from "./TileViewerButSmall";
+import { focusAtom } from "jotai-optics";
+import { splitAtom } from "jotai/utils";
+import { useMemo } from "react";
+import { WritableAtom } from "jotai";
+import { SetStateAction } from "jotai";
 
 export function TileSetViewer() {
-  const sets = useAtomValue(tileSets);
-  const selectedTab = useAtomValue(selectedTabIndex);
-  const x = sets[selectedTab];
-  const [selectedTile, setSelectedTile] = useAtom(selectTileIndex); // TODO: use to set selected cell
+  const [selectedTile, setSelectedTile] = useAtom(selectTileIndexAtom);
+
+  const tab = useAtomValue(selectedTabIndexAtom);
+
+  const tiles = useAtomValue(
+    useMemo(() => {
+      const focusedAtom = focusAtom(tileSetsAtom, (optic) =>
+        optic.index(tab).prop("tiles")
+      );
+      return splitAtom(
+        focusedAtom as WritableAtom<Tile[], [SetStateAction<Tile[]>], void> // IDK
+      );
+    }, [tab])
+  );
+
+  if (!tiles) return null;
 
   return (
     <div className="grid grid-cols-4 w-fit h-fit">
-      {x.tiles.map((tile, i) => {
+      {tiles.map((tileAtom, i) => {
         return (
           <div
             className={`ring ${
@@ -18,7 +40,7 @@ export function TileSetViewer() {
             }`}
             onClick={() => setSelectedTile(i)}
           >
-            <TileViewerButSmall tile={tile} key={i} />
+            <TileViewerButSmall tileAtom={tileAtom} key={`${tileAtom}`} />
           </div>
         );
       })}

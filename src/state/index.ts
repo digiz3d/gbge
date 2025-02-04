@@ -17,18 +17,9 @@ function n<T>(length: number, value: T | (() => T)): T[] {
     .map(() => (typeof value === "function" ? (value as () => T)() : value));
 }
 
-export const tileSets = atom<TileSet[]>([
+export const tileSetsAtom = atom<TileSet[]>([
   { filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) },
 ]);
 
-export const selectedTabIndex = atom(0);
-export const selectTileIndex = atom(0);
-
-export const setPixelColor = atom<null, [number, number, number, Color], void>(
-  null,
-  (get, set, selectedTab, selectTile, selectedPixel, color) => {
-    const sets = structuredClone(get(tileSets));
-    sets[selectedTab].tiles[selectTile][selectedPixel] = color;
-    set(tileSets, sets);
-  }
-);
+export const selectedTabIndexAtom = atom(0);
+export const selectTileIndexAtom = atom(0);

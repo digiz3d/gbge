@@ -1,6 +1,9 @@
+import { useAtomValue } from "jotai";
 import { colorPalette, Tile } from "../state";
+import { Atom } from "jotai";
 
-export function TileViewerButSmall({ tile }: { tile: Tile }) {
+export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
+  const tile = useAtomValue(tileAtom);
   return (
     <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit">
       {tile.map((pixel, i) => (
