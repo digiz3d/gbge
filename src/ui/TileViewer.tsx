@@ -1,4 +1,5 @@
 import {
+  rgbColorPalette,
   selectedPaintIndexAtom,
   selectedTabIndexAtom,
   selectTileIndexAtom,
@@ -7,13 +8,6 @@ import {
 import { focusAtom } from "jotai-optics";
 import { useAtom, useAtomValue } from "jotai";
 import { useMemo } from "react";
-
-const colorPalette: { r: number; g: number; b: number }[] = [
-  { r: 155, g: 188, b: 15 },
-  { r: 129, g: 162, b: 15 }, // original { r: 139, g: 172, b: 15 }
-  { r: 48, g: 98, b: 48 },
-  { r: 15, g: 36, b: 15 }, // original { r: 15, g: 56, b: 15 }
-];
 
 export function TileViewer() {
   const tab = useAtomValue(selectedTabIndexAtom);
@@ -44,7 +38,7 @@ export function TileViewer() {
             setTile(clonedTile);
           }}
           style={{
-            backgroundColor: `rgba(${colorPalette[pixel].r}, ${colorPalette[pixel].g},${colorPalette[pixel].b})`,
+            backgroundColor: rgbColorPalette[pixel],
           }}
         />
       ))}
