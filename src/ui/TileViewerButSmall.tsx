@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { colorPalette, Tile } from "../state";
+import { rgbColorPalette, Tile } from "../state";
 import { Atom } from "jotai";
 
 export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
@@ -11,7 +11,7 @@ export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
           className="h-[8px] w-[8px]"
           key={i}
           style={{
-            backgroundColor: `rgba(${colorPalette[pixel].r}, ${colorPalette[pixel].g},${colorPalette[pixel].b})`,
+            backgroundColor: rgbColorPalette[pixel],
           }}
         />
       ))}

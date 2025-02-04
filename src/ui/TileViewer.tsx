@@ -1,5 +1,5 @@
 import {
-  Color,
+  selectedPaintIndexAtom,
   selectedTabIndexAtom,
   selectTileIndexAtom,
   tileSetsAtom,
@@ -18,6 +18,7 @@ const colorPalette: { r: number; g: number; b: number }[] = [
 export function TileViewer() {
   const tab = useAtomValue(selectedTabIndexAtom);
   const index = useAtomValue(selectTileIndexAtom);
+  const paintIndex = useAtomValue(selectedPaintIndexAtom);
 
   const [tile, setTile] = useAtom(
     useMemo(
@@ -39,7 +40,7 @@ export function TileViewer() {
           key={i}
           onClick={() => {
             const clonedTile = [...tile];
-            clonedTile[i] = ((pixel + 1) % 4) as Color;
+            clonedTile[i] = paintIndex;
             setTile(clonedTile);
           }}
           style={{
