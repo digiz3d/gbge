@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { Belt } from "./Belt.tsx";
-import { BeltButton } from "./Belt.tsx/BeltButton";
-import { selectedPaintIndexAtom } from "../state/index.ts";
+import { Belt } from "./Belt/index.tsx";
+import { BeltColorButton } from "./Belt/BeltColorButton.tsx";
+import { selectedPaintIndexAtom } from "../../state/index.ts";
 import { useSetAtom } from "jotai";
 
-export function ToolbarTileViewerPalette() {
+export function ToolbarTileEditor() {
   const setPaintIndex = useSetAtom(selectedPaintIndexAtom);
   useEffect(() => {
     const keyListener = (e: KeyboardEvent) => {
@@ -33,10 +33,10 @@ export function ToolbarTileViewerPalette() {
   return (
     <div className="self-center px-2">
       <Belt>
-        <BeltButton buttonPaintIndex={0} />
-        <BeltButton buttonPaintIndex={1} />
-        <BeltButton buttonPaintIndex={2} />
-        <BeltButton buttonPaintIndex={3} />
+        <BeltColorButton buttonPaintIndex={0} />
+        <BeltColorButton buttonPaintIndex={1} />
+        <BeltColorButton buttonPaintIndex={2} />
+        <BeltColorButton buttonPaintIndex={3} />
       </Belt>
     </div>
   );

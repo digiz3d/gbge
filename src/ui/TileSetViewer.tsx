@@ -36,9 +36,13 @@ export function TileSetViewer() {
         return (
           <div
             key={`${tileAtom}`}
-            className={`ring ${
-              selectedTile === i ? "filter contrast-150 " : ""
+            className={`ring filter ${
+              selectedTile === i ? "contrast-150" : "contrast-100" // scaling issue when not applying this filter on other cells
             }`}
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
             onClick={() => setSelectedTile(i)}
           >
             <TileViewerButSmall tileAtom={tileAtom} />

@@ -30,3 +30,7 @@ export const mapTileIndexesAtom = atom<number[]>(n(32 * 32, 0));
 export const selectedTabIndexAtom = atom(0);
 export const selectTileIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
+
+// map settings
+export const isVisibleMapGridAtom = atom(true);
+export const isVisibleMapOverlayAtom = atom(true);

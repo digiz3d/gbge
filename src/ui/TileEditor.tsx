@@ -46,7 +46,7 @@ export function TileEditor() {
         isDrawing = true;
       }}
       ref={ref}
-      className="grid grid-cols-8 grid-rows-8 w-fit h-fit"
+      className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden"
     >
       {tile.map((pixel, i) => (
         <div

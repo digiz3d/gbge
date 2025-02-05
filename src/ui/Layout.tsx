@@ -2,12 +2,14 @@ import { MapEditor } from "./MapEditor";
 import { MetaTileViewer } from "./MetaTileViewer";
 import { TileSetViewer } from "./TileSetViewer";
 import { TileEditor } from "./TileEditor";
+import { MapVisibleOverlay } from "./MapEditor/MapVisibleOverlay";
 
 export function Layout() {
   return (
-    <div className="flex flex-row h-full">
-      <div className="flex-1">
+    <div className="flex flex-row h-full p-4">
+      <div className="flex-1 relative">
         <MapEditor />
+        <MapVisibleOverlay />
       </div>
       <div className="flex flex-col h-full">
         <div>

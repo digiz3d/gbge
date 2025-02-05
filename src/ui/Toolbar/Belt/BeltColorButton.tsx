@@ -1,7 +1,11 @@
 import { useAtom } from "jotai";
-import { Color, pixelToRgb, selectedPaintIndexAtom } from "../../state";
+import { Color, pixelToRgb, selectedPaintIndexAtom } from "../../../state";
 
-export function BeltButton({ buttonPaintIndex }: { buttonPaintIndex: Color }) {
+export function BeltColorButton({
+  buttonPaintIndex,
+}: {
+  buttonPaintIndex: Color;
+}) {
   const [paintIndex, setPaintIndex] = useAtom(selectedPaintIndexAtom);
   return (
     <div

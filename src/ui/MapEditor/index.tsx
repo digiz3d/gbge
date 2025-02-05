@@ -1,11 +1,12 @@
 import { useAtom, useAtomValue, WritableAtom } from "jotai";
 import {
+  isVisibleMapGridAtom,
   mapTileIndexesAtom,
   pixelToRgb,
   selectedTabIndexAtom,
   selectTileIndexAtom,
   tileSetsAtom,
-} from "../state";
+} from "../../state";
 import { useEffect, useMemo } from "react";
 import { splitAtom } from "jotai/utils";
 import { focusAtom } from "jotai-optics";
@@ -15,6 +16,7 @@ let isDrawing = false;
 export function MapEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
   const index = useAtomValue(selectTileIndexAtom);
+  const isGridVisible = useAtomValue(isVisibleMapGridAtom);
 
   const mapTilesIndexes = useAtomValue(
     useMemo(() => {
@@ -41,11 +43,13 @@ export function MapEditor() {
       }}
     >
       {mapTilesIndexes.map((mapTileIndexAtom) => (
-        <TileViewerButEvenSmaller
-          key={`${mapTileIndexAtom}`}
-          mapTileIndexAtom={mapTileIndexAtom}
-          paintIndex={index}
-        />
+        <div className={isGridVisible ? "ring ring-[#00000044]" : ""}>
+          <TileViewerButEvenSmaller
+            key={`${mapTileIndexAtom}`}
+            mapTileIndexAtom={mapTileIndexAtom}
+            paintIndex={index}
+          />
+        </div>
       ))}
     </div>
   );
