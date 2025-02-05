@@ -1,5 +1,5 @@
 import {
-  rgbColorPalette,
+  pixelToRgb,
   selectedPaintIndexAtom,
   selectedTabIndexAtom,
   selectTileIndexAtom,
@@ -7,9 +7,11 @@ import {
 } from "../state";
 import { focusAtom } from "jotai-optics";
 import { useAtom, useAtomValue } from "jotai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
-export function TileViewer() {
+let isDrawing = false;
+
+export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
   const index = useAtomValue(selectTileIndexAtom);
   const paintIndex = useAtomValue(selectedPaintIndexAtom);
@@ -23,12 +25,11 @@ export function TileViewer() {
       [tab, index]
     )
   );
-  const [isDrawing, setIsDrawing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const globalMouseUp = () => {
-      setIsDrawing(false);
+      isDrawing = false;
     };
     window.addEventListener("mouseup", globalMouseUp);
     return () => {
@@ -42,7 +43,7 @@ export function TileViewer() {
     <div
       onMouseDown={(e) => {
         e.preventDefault();
-        setIsDrawing(true);
+        isDrawing = true;
       }}
       ref={ref}
       className="grid grid-cols-8 grid-rows-8 w-fit h-fit"
@@ -65,7 +66,7 @@ export function TileViewer() {
             }
           }}
           style={{
-            backgroundColor: rgbColorPalette[pixel],
+            backgroundColor: pixelToRgb[pixel],
           }}
         />
       ))}

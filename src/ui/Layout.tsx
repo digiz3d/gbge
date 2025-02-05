@@ -1,13 +1,13 @@
-import { MapViewer } from "./MapViewer";
+import { MapEditor } from "./MapEditor";
 import { MetaTileViewer } from "./MetaTileViewer";
 import { TileSetViewer } from "./TileSetViewer";
-import { TileViewer } from "./TileViewer";
+import { TileEditor } from "./TileEditor";
 
 export function Layout() {
   return (
     <div className="flex flex-row h-full">
       <div className="flex-1">
-        <MapViewer />
+        <MapEditor />
       </div>
       <div className="flex flex-col h-full">
         <div>
@@ -21,7 +21,7 @@ export function Layout() {
       </div>
       <div className="flex flex-col h-full">
         <div className="grow-0 shrink-1 basis-0">
-          <TileViewer />
+          <TileEditor />
         </div>
         <div className="grow-1 shrink-0 basis-0 overflow-auto">
           <TileSetViewer />

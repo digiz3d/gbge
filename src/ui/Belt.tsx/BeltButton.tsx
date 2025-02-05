@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { Color, rgbColorPalette, selectedPaintIndexAtom } from "../../state";
+import { Color, pixelToRgb, selectedPaintIndexAtom } from "../../state";
 
 export function BeltButton({ buttonPaintIndex }: { buttonPaintIndex: Color }) {
   const [paintIndex, setPaintIndex] = useAtom(selectedPaintIndexAtom);
@@ -9,7 +9,7 @@ export function BeltButton({ buttonPaintIndex }: { buttonPaintIndex: Color }) {
         paintIndex === buttonPaintIndex ? "border-2 border-white" : ""
       }`}
       style={{
-        backgroundColor: rgbColorPalette[buttonPaintIndex],
+        backgroundColor: pixelToRgb[buttonPaintIndex],
       }}
       onClick={() => setPaintIndex(buttonPaintIndex)}
     />

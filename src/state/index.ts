@@ -7,7 +7,7 @@ const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 15, g: 36, b: 15 }, // original { r: 15, g: 56, b: 15 }
 ];
 
-export const rgbColorPalette = colorPalette.map(
+export const pixelToRgb = colorPalette.map(
   (color) => `rgb(${color.r}, ${color.g}, ${color.b})`
 );
 
@@ -25,7 +25,8 @@ export const tileSetsAtom = atom<TileSet[]>([
   { filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) },
 ]);
 
+export const mapTileIndexesAtom = atom<number[]>(n(32 * 32, 0));
+
 export const selectedTabIndexAtom = atom(0);
 export const selectTileIndexAtom = atom(0);
-export const selectedPaletteIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);

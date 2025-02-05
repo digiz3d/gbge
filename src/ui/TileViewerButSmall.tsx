@@ -1,6 +1,8 @@
 import { useAtomValue } from "jotai";
-import { rgbColorPalette, Tile } from "../state";
+import { pixelToRgb, selectedTabIndexAtom, Tile, tileSetsAtom } from "../state";
 import { Atom } from "jotai";
+import { focusAtom } from "jotai-optics";
+import { useMemo } from "react";
 
 export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
   const tile = useAtomValue(tileAtom);
@@ -11,7 +13,7 @@ export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
           className="h-[8px] w-[8px]"
           key={i}
           style={{
-            backgroundColor: rgbColorPalette[pixel],
+            backgroundColor: pixelToRgb[pixel],
           }}
         />
       ))}
