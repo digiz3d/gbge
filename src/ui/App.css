@@ -6,6 +6,7 @@ html {
 
 body {
   height: 100vh;
+  user-select: none;
 }
 
 ::-webkit-scrollbar {

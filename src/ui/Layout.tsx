@@ -7,9 +7,11 @@ import { MapEditor } from "./MapEditor";
 export function Layout() {
   return (
     <div className="flex flex-row h-full p-4">
-      <div className="flex-1 relative">
-        <MapEditor />
-        <MapVisibleOverlay />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="relative">
+          <MapEditor />
+          <MapVisibleOverlay />
+        </div>
       </div>
       <div className="flex flex-col h-full">
         <div>
