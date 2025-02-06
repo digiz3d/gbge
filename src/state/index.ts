@@ -34,3 +34,16 @@ export const selectedPaintIndexAtom = atom<Color>(0);
 // map settings
 export const isVisibleMapGridAtom = atom(true);
 export const isVisibleMapOverlayAtom = atom(true);
+
+// derived data
+export const mapEditorCanvasAtom = atom((get) => {
+  const mapTileIndexes = get(mapTileIndexesAtom);
+  const tileSets = get(tileSetsAtom);
+
+  return mapTileIndexes.map((tileIndex) => {
+    const tileSetIndex = Math.floor(tileIndex / 64);
+    const tileIndexInSet = tileIndex % 64;
+    const tileSet = tileSets[tileSetIndex];
+    return tileSet.tiles[tileIndexInSet];
+  });
+});

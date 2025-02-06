@@ -1,8 +1,8 @@
-import { MapEditor } from "./MapEditor";
 import { MetaTileViewer } from "./MetaTileViewer";
 import { TileSetViewer } from "./TileSetViewer";
 import { TileEditor } from "./TileEditor";
 import { MapVisibleOverlay } from "./MapEditor/MapVisibleOverlay";
+import { MapEditor } from "./MapEditor";
 
 export function Layout() {
   return (
