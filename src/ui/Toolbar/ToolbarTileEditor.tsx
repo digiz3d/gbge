@@ -31,7 +31,7 @@ export function ToolbarTileEditor() {
   }, []);
 
   return (
-    <div className="self-center px-2">
+    <div className="self-center">
       <Belt>
         <BeltColorButton buttonPaintIndex={0} />
         <BeltColorButton buttonPaintIndex={1} />

@@ -13,7 +13,7 @@ export function ToolbarMapEditor() {
   );
 
   return (
-    <div className="self-center px-2">
+    <div className="self-center">
       <Belt>
         <BeltToggleButton
           enabled={isGridVisible}

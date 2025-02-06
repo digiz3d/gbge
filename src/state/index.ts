@@ -1,4 +1,6 @@
 import { atom } from "jotai";
+import { focusAtom } from "jotai-optics";
+import * as shifting from "./shifting";
 
 const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 155, g: 188, b: 15 },
@@ -47,3 +49,33 @@ export const mapEditorCanvasAtom = atom((get) => {
     return tileSet.tiles[tileIndexInSet];
   });
 });
+
+// utils
+export const shiftCurrentTileAtom = atom(
+  null,
+  (get, set, shiftDirection: "left" | "right" | "up" | "down") => {
+    const tab = get(selectedTabIndexAtom);
+    const index = get(selectTileIndexAtom);
+
+    const focusedTile = focusAtom(tileSetsAtom, (optic) =>
+      optic.index(tab).prop("tiles").index(index)
+    );
+    const t = get(focusedTile);
+    if (!t) return;
+
+    switch (shiftDirection) {
+      case "left":
+        set(focusedTile, shifting.shiftLeft(t));
+        break;
+      case "right":
+        set(focusedTile, shifting.shiftRight(t));
+        break;
+      case "up":
+        set(focusedTile, shifting.shiftUp(t));
+        break;
+      case "down":
+        set(focusedTile, shifting.shiftDown(t));
+        break;
+    }
+  }
+);
