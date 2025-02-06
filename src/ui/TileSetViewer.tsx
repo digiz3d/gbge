@@ -37,7 +37,9 @@ export function TileSetViewer() {
           <div
             key={`${tileAtom}`}
             className={`ring filter ${
-              selectedTile === i ? "contrast-150" : "contrast-100" // scaling issue when not applying this filter on other cells
+              selectedTile === i
+                ? "contrast-150"
+                : "contrast-100 hover:contrast-125" // scaling issue when not applying this filter on other cells
             }`}
             style={{
               scrollbarWidth: "none",

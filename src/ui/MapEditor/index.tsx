@@ -68,7 +68,7 @@ export function MapEditor() {
 
         return (
           <img
-            className="cursor-pointer"
+            className="cursor-pointer hover:contrast-125"
             key={index}
             src={createTileImage(pixels)}
             width={TILE_SIZE}

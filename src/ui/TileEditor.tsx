@@ -50,7 +50,7 @@ export function TileEditor() {
     >
       {tile.map((pixel, i) => (
         <div
-          className="h-[32px] w-[32px] ring"
+          className="h-[32px] w-[32px] ring hover:contrast-125"
           key={i}
           onClick={() => {
             const clonedTile = [...tile];
