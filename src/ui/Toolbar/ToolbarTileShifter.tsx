@@ -2,6 +2,7 @@ import { Belt } from "./Belt/index.tsx";
 import { shiftCurrentTileAtom, Tile } from "../../state/index.ts";
 import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
 import { useSetAtom } from "jotai";
+import { clockwise } from "../../state/shifting.ts";
 
 export function ToolbarTileShifter() {
   const shift = useSetAtom(shiftCurrentTileAtom);
@@ -13,6 +14,10 @@ export function ToolbarTileShifter() {
         <BeltTileButton onClick={() => shift("left")} tile={rightArrow} />
         <BeltTileButton onClick={() => shift("up")} tile={upArrow} />
         <BeltTileButton onClick={() => shift("down")} tile={downArrow} />
+        <BeltTileButton
+          onClick={() => shift("clockwise")}
+          tile={clockwiseArrow}
+        />
       </Belt>
     </div>
   );
@@ -29,25 +34,18 @@ const rightArrow: Tile = [
   0, 2, 0, 0, 2, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
 ];
-const leftArrow = rightArrow.slice().reverse();
-const upArrow = rotateRight(leftArrow);
-const downArrow = upArrow.slice().reverse();
+const downArrow = clockwise(rightArrow);
+const leftArrow = clockwise(downArrow);
+const upArrow = clockwise(leftArrow);
 
-function rotateRight(tile: Tile) {
-  const WIDTH = 8;
-  const HEIGHT = 8;
-  let result = new Array(tile.length);
-
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      let oldIndex = y * WIDTH + x;
-      let newX = HEIGHT - 1 - y;
-      let newY = x;
-      let newIndex = newY * HEIGHT + newX;
-
-      result[newIndex] = tile[oldIndex];
-    }
-  }
-
-  return result;
-}
+/* prettier-ignore */
+const clockwiseArrow: Tile = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 2, 2, 2, 0, 0, 0, 0,
+  0, 0, 0, 0, 2, 0, 0, 0,
+  0, 0, 0, 0, 2, 0, 0, 0,
+  0, 0, 2, 0, 2, 0, 2, 0,
+  0, 0, 0, 2, 2, 2, 0,0,
+  0, 0, 0, 0, 2, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+];

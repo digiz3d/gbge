@@ -53,7 +53,11 @@ export const mapEditorCanvasAtom = atom((get) => {
 // utils
 export const shiftCurrentTileAtom = atom(
   null,
-  (get, set, shiftDirection: "left" | "right" | "up" | "down") => {
+  (
+    get,
+    set,
+    shiftDirection: "left" | "right" | "up" | "down" | "clockwise"
+  ) => {
     const tab = get(selectedTabIndexAtom);
     const index = get(selectTileIndexAtom);
 
@@ -75,6 +79,9 @@ export const shiftCurrentTileAtom = atom(
         break;
       case "down":
         set(focusedTile, shifting.shiftDown(t));
+        break;
+      case "clockwise":
+        set(focusedTile, shifting.clockwise(t));
         break;
     }
   }
