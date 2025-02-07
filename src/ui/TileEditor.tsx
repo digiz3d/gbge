@@ -47,12 +47,18 @@ export function TileEditor() {
       }}
       ref={ref}
       className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden"
+
     >
       {tile.map((pixel, i) => (
         <div
           className="h-[32px] w-[32px] ring hover:contrast-125"
           key={i}
           onClick={() => {
+            const clonedTile = [...tile];
+            clonedTile[i] = paintIndex;
+            setTile(clonedTile);
+          }}
+          onMouseDown={() => {
             const clonedTile = [...tile];
             clonedTile[i] = paintIndex;
             setTile(clonedTile);

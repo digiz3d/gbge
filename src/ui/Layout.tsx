@@ -1,8 +1,9 @@
-import { MetaTileViewer } from "./MetaTileViewer";
+import { MetaTileViewer } from "./MetaTileViewer/MetaTileViewer";
 import { TileSetViewer } from "./TileSetViewer";
 import { TileEditor } from "./TileEditor";
 import { MapVisibleOverlay } from "./MapEditor/MapVisibleOverlay";
 import { MapEditor } from "./MapEditor";
+import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
 
 export function Layout() {
   return (
@@ -14,11 +15,7 @@ export function Layout() {
         </div>
       </div>
       <div className="flex flex-col h-full">
-        <div>
-          <button className="cursor-pointer bg-white rounded-2xl px-2 py-1 active:bg-gray-100">
-            Compute
-          </button>
-        </div>
+        <MetaTileCompute />
         <div className="grow-1 shrink-0 basis-0 overflow-auto">
           <MetaTileViewer />
         </div>

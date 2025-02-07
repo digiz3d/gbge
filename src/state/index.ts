@@ -23,17 +23,31 @@ function n<T>(length: number, value: T | (() => T)): T[] {
     .map(() => (typeof value === "function" ? (value as () => T)() : value));
 }
 
-export const tileSetsAtom = atom<TileSet[]>([
-  { filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) },
-]);
+const LS_tileSetInitialValue = localStorage.getItem("tileSetInitialValue");
+console.log("LS_tileSetInitialValue", LS_tileSetInitialValue);
+const tileSetInitialValue: TileSet[] = LS_tileSetInitialValue
+  ? JSON.parse(LS_tileSetInitialValue)
+  : [{ filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) }];
 
-export const mapTileIndexesAtom = atom<number[]>(n(32 * 32, 0));
+export const tileSetsAtom = atom<TileSet[]>(tileSetInitialValue);
 
+const LS_mapTileIndexesInitialValue = localStorage.getItem(
+  "mapTileIndexesInitialValue"
+);
+console.log("LS_mapTileIndexesInitialValue", LS_mapTileIndexesInitialValue);
+const mapTileIndexesInitialValue: number[] = LS_mapTileIndexesInitialValue
+  ? JSON.parse(LS_mapTileIndexesInitialValue)
+  : n(32 * 32, 0);
+
+export const mapTileIndexesAtom = atom<number[]>(mapTileIndexesInitialValue);
+export const mapMetaTilesTileIndexesAtom = atom<
+  [number, number, number, number][]
+>([]);
+
+// UI settings
 export const selectedTabIndexAtom = atom(0);
 export const selectTileIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
-
-// map settings
 export const isVisibleMapGridAtom = atom(true);
 export const isVisibleMapOverlayAtom = atom(true);
 
@@ -48,6 +62,14 @@ export const mapEditorCanvasAtom = atom((get) => {
     const tileSet = tileSets[tileSetIndex];
     return tileSet.tiles[tileIndexInSet];
   });
+});
+
+export const metaTilesAtom = atom((get) => {
+  const currentTileSetIndex = get(selectedTabIndexAtom);
+  const tileSets = get(tileSetsAtom);
+
+  const tileSet = tileSets[currentTileSetIndex];
+  return tileSet.tiles;
 });
 
 // utils
@@ -86,3 +108,37 @@ export const shiftCurrentTileAtom = atom(
     }
   }
 );
+
+export const computeMetaTilesAtom = atom(null, async (get, set) => {
+  const mapTileIndexes = get(mapTileIndexesAtom);
+
+  const metaTileCache = new Map<string, [number, number, number, number]>();
+  const MAP_TILES_SQUARED = 32;
+  const metaTiles: [number, number, number, number][] = [];
+
+  for (let i = 0; i < mapTileIndexes.length; i += 2) {
+    if (i != 0 && i % MAP_TILES_SQUARED === 0) {
+      i += MAP_TILES_SQUARED;
+      if (i >= mapTileIndexes.length) {
+        break;
+      }
+    }
+
+    const index1 = mapTileIndexes[i];
+    const index2 = mapTileIndexes[i + 1];
+    const index3 = mapTileIndexes[i + MAP_TILES_SQUARED];
+    const index4 = mapTileIndexes[i + 1 + MAP_TILES_SQUARED];
+
+    const key = `${index1}-${index2}-${index3}-${index4}`;
+    console.log("key", key);
+    if (metaTileCache.has(key)) {
+      continue;
+    }
+    metaTileCache.set(key, [index1, index2, index3, index4]);
+    metaTiles.push(metaTileCache.get(key)!);
+  }
+
+  console.log("metaTiles", metaTiles);
+
+  set(mapMetaTilesTileIndexesAtom, metaTiles);
+});

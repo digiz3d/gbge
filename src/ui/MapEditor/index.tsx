@@ -12,7 +12,7 @@ const TILE_SIZE = 16;
 const MAP_TILES = 32;
 
 export function MapEditor() {
-  const pixelData = useAtomValue(mapEditorCanvasAtom);
+  const tiles = useAtomValue(mapEditorCanvasAtom);
   const isGridVisible = useAtomValue(isVisibleMapGridAtom);
   const selectedTileIndex = useAtomValue(selectTileIndexAtom);
   const setMapTileIndexes = useSetAtom(mapTileIndexesAtom);
@@ -62,7 +62,7 @@ export function MapEditor() {
           }}
         />
       )}
-      {pixelData.map((pixels, index) => {
+      {tiles.map((tile, index) => {
         const tileX = index % MAP_TILES;
         const tileY = Math.floor(index / MAP_TILES);
 
@@ -70,7 +70,7 @@ export function MapEditor() {
           <img
             className="cursor-pointer hover:contrast-125"
             key={index}
-            src={createTileImage(pixels)}
+            src={createTileImage(tile)}
             width={TILE_SIZE}
             height={TILE_SIZE}
             style={{ imageRendering: "pixelated" }}
