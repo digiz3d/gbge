@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from "jotai";
 import {
+  currentSelectionAtom,
   selectedTabIndexAtom,
-  selectTileIndexAtom,
   Tile,
   tileSetsAtom,
 } from "../state";
@@ -13,7 +13,7 @@ import { WritableAtom } from "jotai";
 import { SetStateAction } from "jotai";
 
 export function TileSetViewer() {
-  const [selectedTile, setSelectedTile] = useAtom(selectTileIndexAtom);
+  const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
 
   const tab = useAtomValue(selectedTabIndexAtom);
 
@@ -32,12 +32,12 @@ export function TileSetViewer() {
 
   return (
     <div className="grid grid-cols-4 w-fit h-fit">
-      {tiles.map((tileAtom, i) => {
+      {tiles.map((tileAtom, index) => {
         return (
           <div
             key={`${tileAtom}`}
-            className={`ring filter ${
-              selectedTile === i
+            className={`cursor-pointer ring filter ${
+              currentSelection.mode === "tile" && currentSelection.index === index
                 ? "contrast-150"
                 : "contrast-100 hover:contrast-125" // scaling issue when not applying this filter on other cells
             }`}
@@ -45,7 +45,7 @@ export function TileSetViewer() {
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
-            onClick={() => setSelectedTile(i)}
+            onClick={() => setCurrentSelection({ mode: "tile", index })}
           >
             <TileViewerButSmall tileAtom={tileAtom} />
           </div>
