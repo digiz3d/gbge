@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
+import { useAtomValue, useSetAtom } from "jotai";
+import { mapSizeAtom, resizeMapAtom } from "../../state";
 
 export function ResizeMapModal({
   close,
@@ -8,8 +10,10 @@ export function ResizeMapModal({
   close: () => void;
   isOpen: boolean;
 }) {
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
+  const { width: mapWidth, height: mapHeight } = useAtomValue(mapSizeAtom);
+  const resizeMap = useSetAtom(resizeMapAtom);
+  const [width, setWidth] = useState(mapWidth);
+  const [height, setHeight] = useState(mapHeight);
 
   console.log("isOpen", isOpen);
   if (!isOpen) return null;
@@ -25,6 +29,7 @@ export function ResizeMapModal({
             onKeyDown={(e) => {
               e.stopPropagation();
             }}
+            min={2}
             placeholder="Width"
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
@@ -36,17 +41,21 @@ export function ResizeMapModal({
               e.stopPropagation();
             }}
             type="number"
+            min={2}
             placeholder="Height"
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
           />
         </div>
         <button
-          className="bg-indigo-600 text-white p-2 cursor-pointer active:bg-indigo-700"
+          className="bg-indigo-600 text-white p-2 cursor-pointer active:bg-indigo-700 disabled:bg-white disabled:text-gray-400 transition-all"
           onClick={() => {
-            // TODO: resize the map and close
+            resizeMap(width, height);
             close();
           }}
+          disabled={
+            width % 2 === 1 || height % 2 === 1 || width < 1 || height < 1
+          }
         >
           Resize
         </button>

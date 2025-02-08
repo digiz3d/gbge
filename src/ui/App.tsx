@@ -8,7 +8,7 @@ function App() {
     <main className="bg-gray-200 h-screen w-screen flex flex-col">
       <Toolbar />
       <Layout />
-      <AutoSaver enabled />
+      <AutoSaver enabled={false} />
     </main>
   );
 }
