@@ -4,6 +4,7 @@ import { TileEditor } from "./TileEditor";
 import { MapVisibleOverlay } from "./MapEditor/MapVisibleOverlay";
 import { MapEditor } from "./MapEditor";
 import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
+import { MetaHighlightOverlay } from "./MapEditor/MetaHighlightOverlay";
 
 export function Layout() {
   return (
@@ -12,6 +13,7 @@ export function Layout() {
         <div className="relative">
           <MapEditor />
           <MapVisibleOverlay />
+          <MetaHighlightOverlay />
         </div>
       </div>
       <div className="flex flex-col h-full">

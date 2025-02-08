@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, ExtractAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
 import * as shifting from "./shifting";
 
@@ -40,9 +40,15 @@ const mapTileIndexesInitialValue: number[] = LS_mapTileIndexesInitialValue
   : n(32 * 32, 0);
 
 export const mapTileIndexesAtom = atom<number[]>(mapTileIndexesInitialValue);
-export const mapMetaTilesTileIndexesAtom = atom<
-  [number, number, number, number][]
+
+// meta tiles
+export const metaTilesAtom = atom<
+  {
+    tileIndexes: [number, number, number, number];
+    spottedAtMapIndex: number[];
+  }[]
 >([]);
+export type MetaTile = ExtractAtomValue<typeof metaTilesAtom>[number];
 
 // UI settings
 export const selectedTabIndexAtom = atom(0);
@@ -50,6 +56,7 @@ export const selectTileIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
 export const isVisibleMapGridAtom = atom(true);
 export const isVisibleMapOverlayAtom = atom(true);
+export const highlightMetaTilesAtom = atom<number[]>([]);
 
 // derived data
 export const mapEditorCanvasAtom = atom((get) => {
@@ -64,7 +71,7 @@ export const mapEditorCanvasAtom = atom((get) => {
   });
 });
 
-export const metaTilesAtom = atom((get) => {
+export const currentTileSetTilesAtom = atom((get) => {
   const currentTileSetIndex = get(selectedTabIndexAtom);
   const tileSets = get(tileSetsAtom);
 
@@ -112,9 +119,9 @@ export const shiftCurrentTileAtom = atom(
 export const computeMetaTilesAtom = atom(null, async (get, set) => {
   const mapTileIndexes = get(mapTileIndexesAtom);
 
-  const metaTileCache = new Map<string, [number, number, number, number]>();
+  const metaTileCache = new Map<string, MetaTile>();
   const MAP_TILES_SQUARED = 32;
-  const metaTiles: [number, number, number, number][] = [];
+  const metaTiles: MetaTile[] = [];
 
   for (let i = 0; i < mapTileIndexes.length; i += 2) {
     if (i != 0 && i % MAP_TILES_SQUARED === 0) {
@@ -130,15 +137,17 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
     const index4 = mapTileIndexes[i + 1 + MAP_TILES_SQUARED];
 
     const key = `${index1}-${index2}-${index3}-${index4}`;
-    console.log("key", key);
-    if (metaTileCache.has(key)) {
-      continue;
+    if (!metaTileCache.has(key)) {
+      metaTileCache.set(key, {
+        spottedAtMapIndex: [],
+        tileIndexes: [index1, index2, index3, index4],
+      });
+      metaTiles.push(metaTileCache.get(key)!);
     }
-    metaTileCache.set(key, [index1, index2, index3, index4]);
-    metaTiles.push(metaTileCache.get(key)!);
+    metaTileCache.get(key)!.spottedAtMapIndex.push(i);
   }
 
   console.log("metaTiles", metaTiles);
 
-  set(mapMetaTilesTileIndexesAtom, metaTiles);
+  set(metaTilesAtom, metaTiles);
 });
