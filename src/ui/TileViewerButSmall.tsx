@@ -27,10 +27,12 @@ export function TileViewerButSmallLikeAButton({
   tile: Tile;
 }) {
   return (
-    <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit" onClick={onClick}>
+    <div
+      className="grid grid-cols-8 grid-rows-8 w-[32px] h-[32px] border-2 border-black"
+      onClick={onClick}
+    >
       {tile.map((pixel, i) => (
         <div
-          className="h-[4px] w-[4px]"
           key={i}
           style={{
             backgroundColor: pixelToRgb[pixel],

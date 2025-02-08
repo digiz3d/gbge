@@ -5,7 +5,7 @@ import { Toolbar } from "./Toolbar";
 
 function App() {
   return (
-    <main className="bg-blue-100 h-screen w-screen flex flex-col">
+    <main className="bg-gray-200 h-screen w-screen flex flex-col">
       <Toolbar />
       <Layout />
       <AutoSaver enabled />

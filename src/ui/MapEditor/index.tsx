@@ -6,6 +6,7 @@ import {
   setMapTileIndexesFromMetaTileAtom,
   setMapTileIndexesAtom,
   getMetaTilesForMapAtom,
+  computeMetaTilesAtom,
 } from "../../state";
 import { createTileImage } from "../../utils/tileImage";
 
@@ -19,16 +20,20 @@ export function MapEditor() {
   const updateTileOnMap = useSetAtom(setMapTileIndexesAtom);
   const updateMetaTileOnMap = useSetAtom(setMapTileIndexesFromMetaTileAtom);
   const metaTiles = useAtomValue(getMetaTilesForMapAtom);
-
+  const computeMetaTiles = useSetAtom(computeMetaTilesAtom);
   useEffect(() => {
-    const handleMouseUp = () => setIsDrawing(false);
+    const handleMouseUp = () => {
+      if (!isDrawing) return
+      setIsDrawing(false);
+      computeMetaTiles();
+    };
     window.addEventListener("mouseup", handleMouseUp);
     return () => window.removeEventListener("mouseup", handleMouseUp);
-  }, []);
+  }, [isDrawing]);
 
   return (
     <div
-      className="grid relative bg-transparent"
+      className="grid relative"
       style={{
         gridTemplateColumns: `repeat(${
           currentSelection.mode === "tile" ? MAP_TILES : MAP_TILES / 2

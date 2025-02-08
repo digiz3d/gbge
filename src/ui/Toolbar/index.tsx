@@ -1,17 +1,20 @@
 import { ToolbarMapEditor } from "./ToolbarMapEditor";
-import { ToolbarSeparator } from "./ToolbarSeparator";
 import { ToolbarTileEditor } from "./ToolbarTileEditor";
 import { ToolbarTileShifter } from "./ToolbarTileShifter";
 
 export function Toolbar() {
   return (
-    <div className="bg-blue-500 w-full flex flex-row p-2 justify-between">
-      <ToolbarMapEditor />
-      <div className="flex flex-row">
-        <ToolbarTileShifter />
-        <ToolbarSeparator />
-        <ToolbarTileEditor />
+    <div className="bg-violet-400 w-full flex flex-row p-2 justify-between">
+      <div className="flex-1">
+        <div className="flex flex-row gap-2">
+          <ToolbarTileEditor />
+          <ToolbarTileShifter />
+        </div>
       </div>
+      <div className="flex-1">
+        <ToolbarMapEditor />
+      </div>
+      <div className="flex-1" />
     </div>
   );
 }

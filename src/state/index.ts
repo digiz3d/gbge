@@ -221,7 +221,12 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
 
   console.log("metaTiles", metaTiles);
 
-  set(metaTilesAtom, metaTiles);
+  set(
+    metaTilesAtom,
+    metaTiles.sort((a, b) =>
+      a.tileIndexes.join("-").localeCompare(b.tileIndexes.join("-"))
+    )
+  );
 });
 
 export const getMetaTilesForMapAtom = atom((get) => {

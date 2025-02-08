@@ -7,7 +7,7 @@ export function BeltToggleButton({
 }) {
   return (
     <div
-      className={`bg-gray-300 w-8 h-8 cursor-pointer ${
+      className={`bg-gray-300 border-2 border-black w-[32px] h-[32px] cursor-pointer ${
         enabled ? "border-2 border-white" : ""
       }`}
       onClick={onClick}
