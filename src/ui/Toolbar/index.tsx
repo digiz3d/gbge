@@ -1,3 +1,4 @@
+import { ToolbarGlobalSettings } from "./ToolbarGlobalSettings";
 import { ToolbarMapEditor } from "./ToolbarMapEditor";
 import { ToolbarTileEditor } from "./ToolbarTileEditor";
 import { ToolbarTileShifter } from "./ToolbarTileShifter";
@@ -14,7 +15,9 @@ export function Toolbar() {
       <div className="flex-1">
         <ToolbarMapEditor />
       </div>
-      <div className="flex-1" />
+      <div className="flex-1">
+        <ToolbarGlobalSettings />
+      </div>
     </div>
   );
 }

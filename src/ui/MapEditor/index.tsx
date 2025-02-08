@@ -23,7 +23,7 @@ export function MapEditor() {
   const computeMetaTiles = useSetAtom(computeMetaTilesAtom);
   useEffect(() => {
     const handleMouseUp = () => {
-      if (!isDrawing) return
+      if (!isDrawing) return;
       setIsDrawing(false);
       computeMetaTiles();
     };
