@@ -1,6 +1,7 @@
 import { atom, ExtractAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
 import * as shifting from "./shifting";
+import { resizeColumns, resizeRows } from "./map";
 
 const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 155, g: 188, b: 15 },
@@ -16,9 +17,31 @@ export const pixelToRgb = colorPalette.map(
 export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
 export type TileSet = { filename: string; tiles: Tile[] };
-export const MAP_ROW_LENGTH = 32;
 
-function n<T>(length: number, value: T | (() => T)): T[] {
+export const mapSizeAtom = atom<{ width: number; height: number }>({
+  width: 32,
+  height: 32,
+});
+
+export const resizeMapAtom = atom(
+  null,
+  (get, set, width: number, height: number) => {
+    const { width: currentWidth, height: currentHeight } = get(mapSizeAtom);
+    if (width === currentWidth && height === currentHeight) return;
+
+    const arr = get(mapTileIndexesAtom);
+
+    // resize rows first as they have no impact on width/nb of columns
+    // the opposite is true for columns
+    const newArray = resizeRows(arr, currentWidth, height);
+    const newArray2 = resizeColumns(newArray, currentWidth, width);
+
+    set(mapTileIndexesAtom, newArray2);
+    set(mapSizeAtom, { width, height });
+  }
+);
+
+export function n<T>(length: number, value: T | (() => T)): T[] {
   return Array(length)
     .fill(null)
     .map(() => (typeof value === "function" ? (value as () => T)() : value));
@@ -45,6 +68,7 @@ export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
+    const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
 
     if (currentSelection.mode !== "tile") return;
     if (
@@ -71,6 +95,7 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
     const currentSelection = get(currentSelectionAtom);
     if (currentSelection.mode !== "metaTile") return;
 
+    const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
     const metaTileIndexes = get(metaTilesAtom);
     const selectedMetaTile = metaTileIndexes[currentSelection.index];
     const [i1, i2, i3, i4] = selectedMetaTile.tileIndexes;
@@ -231,9 +256,10 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
 
 export const getMetaTilesForMapAtom = atom((get) => {
   const currentSelection = get(currentSelectionAtom);
-  const tiles = get(mapEditorCanvasAtom);
-
   if (currentSelection.mode !== "metaTile") return [];
+
+  const tiles = get(mapEditorCanvasAtom);
+  const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
 
   const mTiles: Tile[][] = [];
 

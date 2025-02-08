@@ -6,10 +6,7 @@ export function MetaTileCompute() {
 
   return (
     <div className="flex flex-row items-baseline justify-evenly">
-      <div>
-        Meta tiles:{" "}
-        {metaTilesTileIndexes.length ? metaTilesTileIndexes.length : "?"}
-      </div>
+      <div>Meta tiles: {metaTilesTileIndexes.length}</div>
     </div>
   );
 }
