@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/digiz3d/gbge/compare/v0.2.0...v0.3.0) (2025-02-09)
+
+
+### Features
+
+* new app icon ([d5a7f67](https://github.com/digiz3d/gbge/commit/d5a7f67ff76014d37cf57ddfd23a3b041ed4e612))
+
+
+### Bug Fixes
+
+* **CI:** build univeral apple dmg ([cf30699](https://github.com/digiz3d/gbge/commit/cf30699c322e89f1f3c26cb9543ef6a2c981f947))
+
 ## 0.2.0 (2025-02-09)
 
 
