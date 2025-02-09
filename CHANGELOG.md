@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/digiz3d/gbge/compare/v0.3.0...v0.3.1) (2025-02-09)
+
+
+### Bug Fixes
+
+* use map size for metatile overlay and tile edition ([283c7de](https://github.com/digiz3d/gbge/commit/283c7de1f20a4ad2d0a5adee0718dd290181bad5))
+
 ## [0.3.0](https://github.com/digiz3d/gbge/compare/v0.2.0...v0.3.0) (2025-02-09)
 
 
