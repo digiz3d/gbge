@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
-import { highlightMetaTilesAtom } from "../../state";
+import { highlightMetaTilesAtom, mapSizeAtom } from "../../state";
 
 export function MetaHighlightOverlay() {
   const highlightedMetaTiles = useAtomValue(highlightMetaTilesAtom);
+  const { width } = useAtomValue(mapSizeAtom);
 
   if (!highlightedMetaTiles.length) return null;
 
@@ -13,8 +14,8 @@ export function MetaHighlightOverlay() {
           <div
             className="w-[32px] h-[32px] absolute pointer-events-none bg-indigo-600 opacity-25"
             style={{
-              top: `${Math.floor(tileIndex / 32) * 16}px`,
-              left: `${(tileIndex % 32) * 16}px`,
+              top: `${Math.floor(tileIndex / width) * 16}px`,
+              left: `${(tileIndex % width) * 16}px`,
             }}
             key={tileIndex}
           />

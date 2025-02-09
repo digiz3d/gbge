@@ -55,6 +55,8 @@ jobs:
       - uses: actions/setup-node@v4
       - uses: oven-sh/setup-bun@v2
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
       - name: use correct bundle version (mac)
         if: matrix.platform == 'macos-latest'
         run: jq -r '.version' package.json > version.txt && jq --arg version "$(cat version.txt)" '.version = $version' src-tauri/tauri.conf.json > tmp && mv tmp src-tauri/tauri.conf.json

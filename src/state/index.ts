@@ -38,6 +38,7 @@ export const resizeMapAtom = atom(
 
     set(mapTileIndexesAtom, newArray2);
     set(mapSizeAtom, { width, height });
+    set(computeMetaTilesAtom);
   }
 );
 
@@ -68,19 +69,14 @@ export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
-    const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
+    const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
 
     if (currentSelection.mode !== "tile") return;
-    if (
-      tileX < 0 ||
-      tileX >= MAP_ROW_LENGTH ||
-      tileY < 0 ||
-      tileY >= MAP_ROW_LENGTH
-    ) {
+    if (tileX < 0 || tileX >= MAP_WIDTH || tileY < 0 || tileY >= MAP_HEIGHT) {
       return;
     }
 
-    const mapIndex = tileY * MAP_ROW_LENGTH + tileX;
+    const mapIndex = tileY * MAP_WIDTH + tileX;
     set(mapTileIndexesAtom, (prev) => {
       const newIndexes = [...prev];
       newIndexes[mapIndex] = currentSelection.index;
@@ -95,7 +91,7 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
     const currentSelection = get(currentSelectionAtom);
     if (currentSelection.mode !== "metaTile") return;
 
-    const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
+    const { width: MAP_WIDTH } = get(mapSizeAtom);
     const metaTileIndexes = get(metaTilesAtom);
     const selectedMetaTile = metaTileIndexes[currentSelection.index];
     const [i1, i2, i3, i4] = selectedMetaTile.tileIndexes;
@@ -103,12 +99,10 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
     const baseX = metaTileX * 2;
     const baseY = metaTileY * 2;
 
-    const clickedMapTileIndex1 = baseX + baseY * MAP_ROW_LENGTH;
-    const clickedMapTileIndex2 = baseX + 1 + baseY * MAP_ROW_LENGTH;
-    const clickedMapTileIndex3 =
-      baseX + baseY * MAP_ROW_LENGTH + MAP_ROW_LENGTH;
-    const clickedMapTileIndex4 =
-      baseX + 1 + baseY * MAP_ROW_LENGTH + MAP_ROW_LENGTH;
+    const clickedMapTileIndex1 = baseX + baseY * MAP_WIDTH;
+    const clickedMapTileIndex2 = baseX + 1 + baseY * MAP_WIDTH;
+    const clickedMapTileIndex3 = baseX + baseY * MAP_WIDTH + MAP_WIDTH;
+    const clickedMapTileIndex4 = baseX + 1 + baseY * MAP_WIDTH + MAP_WIDTH;
 
     const focusedTile1 = focusAtom(mapTileIndexesAtom, (optic) =>
       optic.index(clickedMapTileIndex1)
@@ -210,16 +204,16 @@ export const shiftCurrentTileAtom = atom(
 );
 
 export const computeMetaTilesAtom = atom(null, async (get, set) => {
+  const { width: MAP_WIDTH } = get(mapSizeAtom);
   const mapTileIndexes = get(mapTileIndexesAtom);
 
   const metaTileCache = new Map<string, MetaTile>();
-  const MAP_TILES_SQUARED = 32;
   const metaTiles: MetaTile[] = [];
 
   for (let i = 0; i < mapTileIndexes.length; i += 2) {
-    const isEndOfRow = i != 0 && i % MAP_TILES_SQUARED === 0;
+    const isEndOfRow = i != 0 && i % MAP_WIDTH === 0;
     if (isEndOfRow) {
-      i += MAP_TILES_SQUARED; // skip the next row
+      i += MAP_WIDTH; // skip the next row
       const isEndOfMap = i >= mapTileIndexes.length;
       if (isEndOfMap) {
         break;
@@ -228,8 +222,8 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
 
     const index1 = mapTileIndexes[i];
     const index2 = mapTileIndexes[i + 1];
-    const index3 = mapTileIndexes[i + MAP_TILES_SQUARED];
-    const index4 = mapTileIndexes[i + 1 + MAP_TILES_SQUARED];
+    const index3 = mapTileIndexes[i + MAP_WIDTH];
+    const index4 = mapTileIndexes[i + 1 + MAP_WIDTH];
 
     const key = `${index1}-${index2}-${index3}-${index4}`;
     if (metaTileCache.has(key)) {
@@ -244,8 +238,6 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
     metaTiles.push(metaTile);
   }
 
-  console.log("metaTiles", metaTiles);
-
   set(
     metaTilesAtom,
     metaTiles.sort((a, b) =>
@@ -259,14 +251,14 @@ export const getMetaTilesForMapAtom = atom((get) => {
   if (currentSelection.mode !== "metaTile") return [];
 
   const tiles = get(mapEditorCanvasAtom);
-  const { width: MAP_ROW_LENGTH } = get(mapSizeAtom);
+  const { width: MAP_WIDTH } = get(mapSizeAtom);
 
   const mTiles: Tile[][] = [];
 
   for (let i = 0; i < tiles.length; i += 2) {
-    const isEndOfRow = i != 0 && i % MAP_ROW_LENGTH === 0;
+    const isEndOfRow = i != 0 && i % MAP_WIDTH === 0;
     if (isEndOfRow) {
-      i += MAP_ROW_LENGTH; // skip the next row
+      i += MAP_WIDTH; // skip the next row
       const isEndOfMap = i >= tiles.length;
       if (isEndOfMap) {
         break;
@@ -274,8 +266,8 @@ export const getMetaTilesForMapAtom = atom((get) => {
     }
     const t1 = tiles[i];
     const t2 = tiles[i + 1];
-    const t3 = tiles[i + MAP_ROW_LENGTH];
-    const t4 = tiles[i + 1 + MAP_ROW_LENGTH];
+    const t3 = tiles[i + MAP_WIDTH];
+    const t4 = tiles[i + 1 + MAP_WIDTH];
 
     mTiles.push([t1, t2, t3, t4]);
   }
