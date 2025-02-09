@@ -49,7 +49,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, windows-latest]
-
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -62,10 +61,11 @@ jobs:
       - name: use correct bundle version (windows)
         if: matrix.platform == 'windows-latest'
         run: jq -r '.version' package.json > version.txt && jq --arg version "$(type version.txt)" '.version = $version' src-tauri/tauri.conf.json > tmp && mv -Force tmp src-tauri/tauri.conf.json
-      - name: install app dependencies and build it
-        run: bun install && bun run tauri build
+      - name: install dependencies
+        run: bun install
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.get-release.outputs.release_id }}
+          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
