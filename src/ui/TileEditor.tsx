@@ -6,16 +6,15 @@ import {
   selectedTabIndexAtom,
   tileSetsAtom,
 } from "../state";
-import { focusAtom } from "jotai-optics";
 import { atom, useAtom, useAtomValue } from "jotai";
-import { useEffect, useMemo, useRef } from "react";
-
-let isDrawing = false;
+import { focusAtom } from "jotai-optics";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
   const paintIndex = useAtomValue(selectedPaintIndexAtom);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const [tile, setTile] = useAtom(
     useMemo(() => {
@@ -24,21 +23,29 @@ export function TileEditor() {
       return focusAtom(tileSetsAtom, (optic) =>
         optic.index(tab).prop("tiles").index(currentSelection.index)
       );
-    }, [tab, currentSelection.index])
+    }, [tab, currentSelection])
   );
+
   const ref = useRef<HTMLDivElement>(null);
+
+  const [draft, setDraft] = useAtom(
+    useMemo(() => {
+      return atom(tile);
+    }, [tile])
+  );
 
   useEffect(() => {
     const globalMouseUp = () => {
-      isDrawing = false;
+      setIsDrawing(false);
+      if (draft) setTile(draft);
     };
     window.addEventListener("mouseup", globalMouseUp);
     return () => {
       window.removeEventListener("mouseup", globalMouseUp);
     };
-  }, []);
+  }, [draft]);
 
-  if (!tile?.length) {
+  if (!tile?.length || !draft?.length) {
     return (
       <div className="h-[256px] w-[256px]">Select a tile to start editing</div>
     );
@@ -48,31 +55,31 @@ export function TileEditor() {
     <div
       onMouseDown={(e) => {
         e.preventDefault();
-        isDrawing = true;
+        setIsDrawing(true);
       }}
       ref={ref}
       className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden"
     >
-      {tile.map((pixel, i) => (
+      {draft.map((pixel, i) => (
         <div
           className="h-[32px] w-[32px] ring hover:contrast-125"
           key={i}
           onClick={() => {
-            const clonedTile = [...tile];
+            const clonedTile = [...draft];
             clonedTile[i] = paintIndex;
-            setTile(clonedTile);
+            setDraft(clonedTile);
           }}
           onMouseDown={() => {
-            const clonedTile = [...tile];
+            const clonedTile = [...draft];
             clonedTile[i] = paintIndex;
-            setTile(clonedTile);
+            setDraft(clonedTile);
           }}
           onMouseOver={(e) => {
             if (isDrawing) {
               e.preventDefault();
-              const clonedTile = [...tile];
+              const clonedTile = [...draft];
               clonedTile[i] = paintIndex;
-              setTile(clonedTile);
+              setDraft(clonedTile);
             }
           }}
           style={{

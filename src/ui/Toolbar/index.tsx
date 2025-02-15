@@ -1,3 +1,4 @@
+import { ToolbarClipboard } from "./ToolbarClipboard";
 import { ToolbarGlobalSettings } from "./ToolbarGlobalSettings";
 import { ToolbarMapEditor } from "./ToolbarMapEditor";
 import { ToolbarTileEditor } from "./ToolbarTileEditor";
@@ -10,6 +11,7 @@ export function Toolbar() {
         <div className="flex flex-row gap-2">
           <ToolbarTileEditor />
           <ToolbarTileShifter />
+          <ToolbarClipboard />
         </div>
       </div>
       <div className="flex-1">

@@ -28,7 +28,7 @@ export function TileViewerButSmallLikeAButton({
 }) {
   return (
     <div
-      className="grid grid-cols-8 grid-rows-8 w-[32px] h-[32px] border-2 border-black"
+      className="cursor-pointer grid grid-cols-8 grid-rows-8 w-[32px] h-[32px] border-2 border-black"
       onClick={onClick}
     >
       {tile.map((pixel, i) => (

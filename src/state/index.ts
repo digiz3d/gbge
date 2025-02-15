@@ -1,5 +1,6 @@
 import { atom, ExtractAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
+
 import * as shifting from "./shifting";
 import { resizeColumns, resizeRows } from "./map";
 
@@ -18,11 +19,37 @@ export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
 export type TileSet = { filename: string; tiles: Tile[] };
 
-const DEFAULT_MAP_SIZE = { width: 64, height: 64 };
+const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 
 export const mapSizeAtom = atom<{ width: number; height: number }>(
   DEFAULT_MAP_SIZE
 );
+
+export const copiedTileAtom = atom<Tile | null>(null);
+export const copyTriggerAtom = atom(null, (get, set) => {
+  const currentSelection = get(currentSelectionAtom);
+  if (currentSelection.mode !== "tile") return;
+
+  const tileSetIndex = get(selectedTabIndexAtom);
+  const tileSet = get(tileSetsAtom)[tileSetIndex];
+  const tile = tileSet.tiles[currentSelection.index];
+
+  set(copiedTileAtom, tile);
+});
+
+export const pasteTriggerAtom = atom(null, (get, set) => {
+  const copiedTile = get(copiedTileAtom);
+  if (!copiedTile) return;
+
+  const currentSelection = get(currentSelectionAtom);
+  if (currentSelection.mode !== "tile") return;
+
+  const tileSetIndex = get(selectedTabIndexAtom);
+  const tileSets = get(tileSetsAtom);
+  const draft = structuredClone(tileSets);
+  draft[tileSetIndex].tiles[currentSelection.index] = copiedTile;
+  set(tileSetsAtom, draft);
+});
 
 export const resizeMapAtom = atom(
   null,
