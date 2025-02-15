@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/digiz3d/gbge/compare/v0.3.1...v0.4.0) (2025-02-15)
+
+
+### Features
+
+* copy/paste tiles ([3c06615](https://github.com/digiz3d/gbge/commit/3c06615201054d6248eeb874841dc23a4c4a618a))
+* handle multiple maps in state ([a71046d](https://github.com/digiz3d/gbge/commit/a71046db39026794e5a8195fdb066ad5c6c9463d))
+
+
+### Bug Fixes
+
+* grid is properly displayed on larger maps ([2be2185](https://github.com/digiz3d/gbge/commit/2be21852f83e65b9acb85a20babacb43de2cfbbb))
+* highlight overlay focus current map ([5eec71f](https://github.com/digiz3d/gbge/commit/5eec71ff5a76d6b7bd1c2f9227949e632e768eab))
+
 ## [0.3.1](https://github.com/digiz3d/gbge/compare/v0.3.0...v0.3.1) (2025-02-09)
 
 
