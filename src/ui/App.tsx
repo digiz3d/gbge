@@ -4,7 +4,8 @@ import { AutoSaver } from "./AutoSaver";
 import { Layout } from "./Layout";
 import { Toolbar } from "./Toolbar";
 import { useSetAtom } from "jotai";
-import { copyTriggerAtom, pasteTriggerAtom } from "../state";
+import { copyTriggerAtom } from "../state/clipboard";
+import { pasteTriggerAtom } from "../state/clipboard";
 
 function App() {
   const copyTrigger = useSetAtom(copyTriggerAtom);
