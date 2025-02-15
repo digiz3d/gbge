@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
 import { useAtomValue, useSetAtom } from "jotai";
 import { mapSizeAtom, resizeMapAtom } from "../../state";
@@ -12,10 +12,15 @@ export function ResizeMapModal({
 }) {
   const { width: mapWidth, height: mapHeight } = useAtomValue(mapSizeAtom);
   const resizeMap = useSetAtom(resizeMapAtom);
+
   const [width, setWidth] = useState(mapWidth);
   const [height, setHeight] = useState(mapHeight);
 
-  console.log("isOpen", isOpen);
+  useEffect(() => {
+    setWidth(mapWidth);
+    setHeight(mapHeight);
+  }, [mapWidth, mapHeight]);
+
   if (!isOpen) return null;
 
   return (

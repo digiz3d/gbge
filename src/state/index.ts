@@ -21,9 +21,15 @@ export type TileSet = { filename: string; tiles: Tile[] };
 
 const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 
-export const mapSizeAtom = atom<{ width: number; height: number }>(
-  DEFAULT_MAP_SIZE
-);
+export const mapSizeAtom = atom((get) => {
+  const maps = get(mapsAtom);
+  const mapIndex = get(currentMapIndexAtom);
+  const map = maps[mapIndex];
+  return {
+    width: map.size.width,
+    height: map.size.height,
+  };
+});
 
 export const resizeMapAtom = atom(
   null,
@@ -42,10 +48,9 @@ export const resizeMapAtom = atom(
 
     const mapsDraft = structuredClone(maps);
     mapsDraft[mapIndex].tilesIndexes = newArray2;
+    mapsDraft[mapIndex].size = { width, height };
 
     set(mapsAtom, mapsDraft);
-    set(mapSizeAtom, { width, height });
-    set(computeMetaTilesAtom);
   }
 );
 
@@ -62,23 +67,41 @@ const tileSetInitialValue: TileSet[] = LS_tileSetInitialValue
   : [{ filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) }];
 
 export const LOCALSTORAGE_MAPS_KEY = "maps";
-const LS_mapTileIndexesInitialValue = localStorage.getItem(
-  LOCALSTORAGE_MAPS_KEY
-);
-
-const initialMaps: Map[] = LS_mapTileIndexesInitialValue
-  ? JSON.parse(LS_mapTileIndexesInitialValue)
-  : [
+const LS_initialMaps = localStorage.getItem(LOCALSTORAGE_MAPS_KEY);
+const initialMaps: MapEntity[] = LS_initialMaps
+  ? JSON.parse(LS_initialMaps)
+  : ([
       {
         id: "default",
         name: "default",
         tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
+        size: {
+          height: DEFAULT_MAP_SIZE.height,
+          width: DEFAULT_MAP_SIZE.width,
+        },
       },
-    ];
+      {
+        id: "default",
+        name: "default",
+        tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
+        size: {
+          height: DEFAULT_MAP_SIZE.height,
+          width: DEFAULT_MAP_SIZE.width,
+        },
+      },
+    ] satisfies MapEntity[]);
 
-type Map = { id: string; name: string; tilesIndexes: number[] };
+type MapEntity = {
+  id: string;
+  name: string;
+  tilesIndexes: number[];
+  size: {
+    height: number;
+    width: number;
+  };
+};
 
-export const mapsAtom = atom<Map[]>(initialMaps);
+export const mapsAtom = atom<MapEntity[]>(initialMaps);
 export const currentMapIndexAtom = atom(0);
 export const setMapTileIndexesAtom = atom(
   null,
@@ -143,7 +166,8 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
 export const metaTilesAtom = atom<
   {
     tileIndexes: [number, number, number, number];
-    spottedAtMapIndex: number[];
+    spottedAt: Map<number, number[]>;
+    spottedCount: number;
   }[]
 >([]);
 export type MetaTile = ExtractAtomValue<typeof metaTilesAtom>[number];
@@ -227,7 +251,8 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
   const metaTiles: MetaTile[] = [];
   const metaTileCache = new Map<string, MetaTile>();
 
-  for (const map of maps) {
+  for (let mapIndex = 0; mapIndex < maps.length; mapIndex++) {
+    const map = maps[mapIndex];
     const mapTileIndexes = map.tilesIndexes;
 
     for (let i = 0; i < mapTileIndexes.length; i += 2) {
@@ -247,11 +272,18 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
 
       const key = `${index1}-${index2}-${index3}-${index4}`;
       if (metaTileCache.has(key)) {
-        metaTileCache.get(key)!.spottedAtMapIndex.push(i);
+        const metaTile = metaTileCache.get(key)!;
+        if (metaTile.spottedAt.has(mapIndex)) {
+          metaTile.spottedAt.get(mapIndex)!.push(i);
+        } else {
+          metaTile.spottedAt.set(mapIndex, [i]);
+        }
+        metaTile.spottedCount++;
         continue;
       }
       const metaTile: MetaTile = {
-        spottedAtMapIndex: [i],
+        spottedAt: new Map([[mapIndex, [i]]]),
+        spottedCount: 1,
         tileIndexes: [index1, index2, index3, index4],
       };
       metaTileCache.set(key, metaTile);

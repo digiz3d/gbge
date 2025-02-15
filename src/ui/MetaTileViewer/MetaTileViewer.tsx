@@ -4,40 +4,52 @@ import {
   currentTileSetTilesAtom,
   highlightMetaTilesAtom,
   currentSelectionAtom,
+  currentMapIndexAtom,
 } from "../../state";
 import { createTileImage } from "../../utils/tileImage";
 
 export function MetaTileViewer() {
-  const metaTilesTileIndexes = useAtomValue(metaTilesAtom);
+  const metaTiles = useAtomValue(metaTilesAtom);
   const tiles = useAtomValue(currentTileSetTilesAtom);
   const setHoveringMetaTile = useSetAtom(highlightMetaTilesAtom);
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
+  const currentMapIndex = useAtomValue(currentMapIndexAtom);
 
   return (
     <div className="grid grid-cols-2 w-[256px] h-fit">
-      {metaTilesTileIndexes.map(({ tileIndexes, spottedAtMapIndex }, index) => (
-        <div
-          className={`h-[128px] w-[128px] ring grid grid-cols-2 grid-rows-2 cursor-pointer ${
-            currentSelection.mode === "metaTile" &&
-            index === currentSelection.index
-              ? "contrast-150"
-              : ""
-          }`}
-          key={index}
-          onClick={() => setCurrentSelection({ mode: "metaTile", index })}
-          onMouseEnter={() => setHoveringMetaTile(spottedAtMapIndex)}
-          onMouseLeave={() => setHoveringMetaTile([])}
-        >
-          {tileIndexes.map((tileIndex, j) => (
-            <img
-              style={{ imageRendering: "pixelated" }}
-              className="h-[64px] w-[64px]"
-              src={createTileImage(tiles[tileIndex])}
-              key={`${index}-${j}`}
-            />
-          ))}
-        </div>
-      ))}
+      {metaTiles.map(({ spottedAt, spottedCount, tileIndexes }, index) => {
+        const isActive =
+          currentSelection.mode === "metaTile" &&
+          index === currentSelection.index;
+
+        const locallySpotted = spottedAt.get(currentMapIndex)?.length ?? 0;
+
+        return (
+          <div
+            className={`relative h-[128px] w-[128px] ring grid grid-cols-2 grid-rows-2 cursor-pointer ${
+              isActive ? "contrast-150" : ""
+            }`}
+            key={index}
+            onClick={() => setCurrentSelection({ mode: "metaTile", index })}
+            onMouseEnter={() =>
+              setHoveringMetaTile(spottedAt.get(currentMapIndex) ?? [])
+            }
+            onMouseLeave={() => setHoveringMetaTile([])}
+          >
+            <div className="text-xs absolute bottom-1 right-1 text-white font-bold">
+              {locallySpotted} [{spottedCount}]
+            </div>
+            {tileIndexes.map((tileIndex, j) => (
+              <img
+                style={{ imageRendering: "pixelated" }}
+                className="h-[64px] w-[64px]"
+                src={createTileImage(tiles[tileIndex])}
+                key={`${index}-${j}`}
+              />
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
