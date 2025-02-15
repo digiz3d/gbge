@@ -31,14 +31,19 @@ export const resizeMapAtom = atom(
     const { width: currentWidth, height: currentHeight } = get(mapSizeAtom);
     if (width === currentWidth && height === currentHeight) return;
 
-    const arr = get(mapTileIndexesAtom);
+    const maps = get(mapsAtom);
+    const mapIndex = get(currentMapIndexAtom);
+    const arr = maps[mapIndex].tilesIndexes;
 
     // resize rows first as they have no impact on width/nb of columns
     // the opposite is true for columns
     const newArray = resizeRows(arr, currentWidth, height);
     const newArray2 = resizeColumns(newArray, currentWidth, width);
 
-    set(mapTileIndexesAtom, newArray2);
+    const mapsDraft = structuredClone(maps);
+    mapsDraft[mapIndex].tilesIndexes = newArray2;
+
+    set(mapsAtom, mapsDraft);
     set(mapSizeAtom, { width, height });
     set(computeMetaTilesAtom);
   }
@@ -56,21 +61,30 @@ const tileSetInitialValue: TileSet[] = LS_tileSetInitialValue
   ? JSON.parse(LS_tileSetInitialValue)
   : [{ filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) }];
 
-export const tileSetsAtom = atom<TileSet[]>(tileSetInitialValue);
-
+export const LOCALSTORAGE_MAPS_KEY = "maps";
 const LS_mapTileIndexesInitialValue = localStorage.getItem(
-  "mapTileIndexesInitialValue"
+  LOCALSTORAGE_MAPS_KEY
 );
-console.log("LS_mapTileIndexesInitialValue", LS_mapTileIndexesInitialValue);
-const mapTileIndexesInitialValue: number[] = LS_mapTileIndexesInitialValue
-  ? JSON.parse(LS_mapTileIndexesInitialValue)
-  : n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0);
 
-export const mapTileIndexesAtom = atom<number[]>(mapTileIndexesInitialValue);
+const initialMaps: Map[] = LS_mapTileIndexesInitialValue
+  ? JSON.parse(LS_mapTileIndexesInitialValue)
+  : [
+      {
+        id: "default",
+        name: "default",
+        tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
+      },
+    ];
+
+type Map = { id: string; name: string; tilesIndexes: number[] };
+
+export const mapsAtom = atom<Map[]>(initialMaps);
+export const currentMapIndexAtom = atom(0);
 export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
+    const currentMapIndex = get(currentMapIndexAtom);
     const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
 
     if (currentSelection.mode !== "tile") return;
@@ -78,12 +92,10 @@ export const setMapTileIndexesAtom = atom(
       return;
     }
 
-    const mapIndex = tileY * MAP_WIDTH + tileX;
-    set(mapTileIndexesAtom, (prev) => {
-      const newIndexes = [...prev];
-      newIndexes[mapIndex] = currentSelection.index;
-      return newIndexes;
-    });
+    const tileIndex = tileY * MAP_WIDTH + tileX;
+    const draft = structuredClone(get(mapsAtom));
+    draft[currentMapIndex].tilesIndexes[tileIndex] = currentSelection.index;
+    set(mapsAtom, draft);
   }
 );
 
@@ -91,6 +103,7 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
   null,
   (get, set, metaTileX: number, metaTileY: number) => {
     const currentSelection = get(currentSelectionAtom);
+    const mapIndex = get(currentMapIndexAtom);
     if (currentSelection.mode !== "metaTile") return;
 
     const { width: MAP_WIDTH } = get(mapSizeAtom);
@@ -106,17 +119,17 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
     const clickedMapTileIndex3 = baseX + baseY * MAP_WIDTH + MAP_WIDTH;
     const clickedMapTileIndex4 = baseX + 1 + baseY * MAP_WIDTH + MAP_WIDTH;
 
-    const focusedTile1 = focusAtom(mapTileIndexesAtom, (optic) =>
-      optic.index(clickedMapTileIndex1)
+    const focusedTile1 = focusAtom(mapsAtom, (optic) =>
+      optic.index(mapIndex).prop("tilesIndexes").index(clickedMapTileIndex1)
     );
-    const focusedTile2 = focusAtom(mapTileIndexesAtom, (optic) =>
-      optic.index(clickedMapTileIndex2)
+    const focusedTile2 = focusAtom(mapsAtom, (optic) =>
+      optic.index(mapIndex).prop("tilesIndexes").index(clickedMapTileIndex2)
     );
-    const focusedTile3 = focusAtom(mapTileIndexesAtom, (optic) =>
-      optic.index(clickedMapTileIndex3)
+    const focusedTile3 = focusAtom(mapsAtom, (optic) =>
+      optic.index(mapIndex).prop("tilesIndexes").index(clickedMapTileIndex3)
     );
-    const focusedTile4 = focusAtom(mapTileIndexesAtom, (optic) =>
-      optic.index(clickedMapTileIndex4)
+    const focusedTile4 = focusAtom(mapsAtom, (optic) =>
+      optic.index(mapIndex).prop("tilesIndexes").index(clickedMapTileIndex4)
     );
 
     set(focusedTile1, i1);
@@ -146,11 +159,14 @@ export const isVisibleMapGridAtom = atom(true);
 export const isVisibleMapOverlayAtom = atom(true);
 export const highlightMetaTilesAtom = atom<number[]>([]);
 
+export const tileSetsAtom = atom<TileSet[]>(tileSetInitialValue);
+
 export const mapEditorCanvasAtom = atom((get) => {
-  const mapTileIndexes = get(mapTileIndexesAtom);
+  const maps = get(mapsAtom);
+  const mapIndex = get(currentMapIndexAtom);
   const tileSets = get(tileSetsAtom);
 
-  return mapTileIndexes.map((tileIndex) => {
+  return maps[mapIndex].tilesIndexes.map((tileIndex) => {
     const tileSetIndex = Math.floor(tileIndex / 64);
     const tileIndexInSet = tileIndex % 64;
     const tileSet = tileSets[tileSetIndex];
@@ -207,37 +223,40 @@ export const shiftCurrentTileAtom = atom(
 
 export const computeMetaTilesAtom = atom(null, async (get, set) => {
   const { width: MAP_WIDTH } = get(mapSizeAtom);
-  const mapTileIndexes = get(mapTileIndexesAtom);
-
-  const metaTileCache = new Map<string, MetaTile>();
+  const maps = get(mapsAtom);
   const metaTiles: MetaTile[] = [];
+  const metaTileCache = new Map<string, MetaTile>();
 
-  for (let i = 0; i < mapTileIndexes.length; i += 2) {
-    const isEndOfRow = i != 0 && i % MAP_WIDTH === 0;
-    if (isEndOfRow) {
-      i += MAP_WIDTH; // skip the next row
-      const isEndOfMap = i >= mapTileIndexes.length;
-      if (isEndOfMap) {
-        break;
+  for (const map of maps) {
+    const mapTileIndexes = map.tilesIndexes;
+
+    for (let i = 0; i < mapTileIndexes.length; i += 2) {
+      const isEndOfRow = i != 0 && i % MAP_WIDTH === 0;
+      if (isEndOfRow) {
+        i += MAP_WIDTH; // skip the next row
+        const isEndOfMap = i >= mapTileIndexes.length;
+        if (isEndOfMap) {
+          break;
+        }
       }
-    }
 
-    const index1 = mapTileIndexes[i];
-    const index2 = mapTileIndexes[i + 1];
-    const index3 = mapTileIndexes[i + MAP_WIDTH];
-    const index4 = mapTileIndexes[i + 1 + MAP_WIDTH];
+      const index1 = mapTileIndexes[i];
+      const index2 = mapTileIndexes[i + 1];
+      const index3 = mapTileIndexes[i + MAP_WIDTH];
+      const index4 = mapTileIndexes[i + 1 + MAP_WIDTH];
 
-    const key = `${index1}-${index2}-${index3}-${index4}`;
-    if (metaTileCache.has(key)) {
-      metaTileCache.get(key)!.spottedAtMapIndex.push(i);
-      continue;
+      const key = `${index1}-${index2}-${index3}-${index4}`;
+      if (metaTileCache.has(key)) {
+        metaTileCache.get(key)!.spottedAtMapIndex.push(i);
+        continue;
+      }
+      const metaTile: MetaTile = {
+        spottedAtMapIndex: [i],
+        tileIndexes: [index1, index2, index3, index4],
+      };
+      metaTileCache.set(key, metaTile);
+      metaTiles.push(metaTile);
     }
-    const metaTile: MetaTile = {
-      spottedAtMapIndex: [i],
-      tileIndexes: [index1, index2, index3, index4],
-    };
-    metaTileCache.set(key, metaTile);
-    metaTiles.push(metaTile);
   }
 
   set(

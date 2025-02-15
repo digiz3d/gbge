@@ -6,6 +6,7 @@ import { MapEditor } from "./MapEditor";
 import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
 import { MetaHighlightOverlay } from "./MapEditor/MetaHighlightOverlay";
 import { GridOverlay } from "./MapEditor/GridOverlay";
+import { MapsTabs } from "./MapsTabs/MapsTabs";
 
 export function Layout() {
   return (
@@ -18,7 +19,8 @@ export function Layout() {
           <TileSetViewer />
         </div>
       </div>
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center flex-col">
+        <MapsTabs />
         <div className="relative h-[600px] w-[600px] overflow-scroll">
           <MapEditor />
           <MapVisibleOverlay />

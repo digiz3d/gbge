@@ -6,7 +6,6 @@ import {
   setMapTileIndexesFromMetaTileAtom,
   setMapTileIndexesAtom,
   getMetaTilesForMapAtom,
-  computeMetaTilesAtom,
   mapSizeAtom,
 } from "../../state";
 import { createTileImage } from "../../utils/tileImage";
@@ -20,13 +19,11 @@ export function MapEditor() {
   const updateTileOnMap = useSetAtom(setMapTileIndexesAtom);
   const updateMetaTileOnMap = useSetAtom(setMapTileIndexesFromMetaTileAtom);
   const metaTiles = useAtomValue(getMetaTilesForMapAtom);
-  const computeMetaTiles = useSetAtom(computeMetaTilesAtom);
   const { width: MAP_TILES } = useAtomValue(mapSizeAtom);
   useEffect(() => {
     const handleMouseUp = () => {
       if (!isDrawing) return;
       setIsDrawing(false);
-      computeMetaTiles();
     };
     window.addEventListener("mouseup", handleMouseUp);
     return () => window.removeEventListener("mouseup", handleMouseUp);
