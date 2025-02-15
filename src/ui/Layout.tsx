@@ -19,7 +19,7 @@ export function Layout() {
         </div>
       </div>
       <div className="flex-1 flex items-center justify-center">
-        <div className="relative">
+        <div className="relative h-[600px] w-[600px] overflow-scroll">
           <MapEditor />
           <MapVisibleOverlay />
           <MetaHighlightOverlay />

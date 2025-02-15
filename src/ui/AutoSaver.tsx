@@ -13,6 +13,9 @@ export function AutoSaver({ enabled }: { enabled: boolean }) {
 
   useEffect(() => {
     computeMetaTiles();
+  }, []);
+
+  useEffect(() => {
     if (!enabled) return;
 
     const i = setInterval(() => {

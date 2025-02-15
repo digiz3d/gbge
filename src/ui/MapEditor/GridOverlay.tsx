@@ -1,15 +1,23 @@
 import { useAtomValue } from "jotai";
-import { currentSelectionAtom, isVisibleMapGridAtom } from "../../state";
+import {
+  currentSelectionAtom,
+  isVisibleMapGridAtom,
+  mapSizeAtom,
+} from "../../state";
 
 const TILE_SIZE = 16;
+const METATILE_SIZE = TILE_SIZE * 2;
 
 export function GridOverlay() {
   const isGridVisible = useAtomValue(isVisibleMapGridAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
-
-  const gridSize = currentSelection.mode === "tile" ? TILE_SIZE : TILE_SIZE * 2;
+  const { height, width } = useAtomValue(mapSizeAtom);
 
   if (!isGridVisible) return null;
+
+  const gridSize = currentSelection.mode === "tile" ? TILE_SIZE : METATILE_SIZE;
+  const Xpx = width * TILE_SIZE;
+  const Ypx = height * TILE_SIZE;
 
   return (
     <div
@@ -19,6 +27,8 @@ export function GridOverlay() {
         linear-gradient(90deg, #00000044 1px, transparent 1px)`,
         backgroundSize: `${gridSize}px ${gridSize}px`,
         pointerEvents: "none",
+        height: `${Ypx}px`,
+        width: `${Xpx}px`,
       }}
     />
   );

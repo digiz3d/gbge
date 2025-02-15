@@ -18,10 +18,11 @@ export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
 export type TileSet = { filename: string; tiles: Tile[] };
 
-export const mapSizeAtom = atom<{ width: number; height: number }>({
-  width: 32,
-  height: 32,
-});
+const DEFAULT_MAP_SIZE = { width: 64, height: 64 };
+
+export const mapSizeAtom = atom<{ width: number; height: number }>(
+  DEFAULT_MAP_SIZE
+);
 
 export const resizeMapAtom = atom(
   null,
@@ -62,7 +63,7 @@ const LS_mapTileIndexesInitialValue = localStorage.getItem(
 console.log("LS_mapTileIndexesInitialValue", LS_mapTileIndexesInitialValue);
 const mapTileIndexesInitialValue: number[] = LS_mapTileIndexesInitialValue
   ? JSON.parse(LS_mapTileIndexesInitialValue)
-  : n(32 * 32, 0);
+  : n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0);
 
 export const mapTileIndexesAtom = atom<number[]>(mapTileIndexesInitialValue);
 export const setMapTileIndexesAtom = atom(
