@@ -60,38 +60,7 @@ export function n<T>(length: number, value: T | (() => T)): T[] {
     .map(() => (typeof value === "function" ? (value as () => T)() : value));
 }
 
-const LS_tileSetInitialValue = localStorage.getItem("tileSetInitialValue");
-console.log("LS_tileSetInitialValue", LS_tileSetInitialValue);
-const tileSetInitialValue: TileSet[] = LS_tileSetInitialValue
-  ? JSON.parse(LS_tileSetInitialValue)
-  : [{ filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) }];
-
-export const LOCALSTORAGE_MAPS_KEY = "maps";
-const LS_initialMaps = localStorage.getItem(LOCALSTORAGE_MAPS_KEY);
-const initialMaps: MapEntity[] = LS_initialMaps
-  ? JSON.parse(LS_initialMaps)
-  : ([
-      {
-        id: "default",
-        name: "default",
-        tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
-        size: {
-          height: DEFAULT_MAP_SIZE.height,
-          width: DEFAULT_MAP_SIZE.width,
-        },
-      },
-      {
-        id: "default",
-        name: "default",
-        tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
-        size: {
-          height: DEFAULT_MAP_SIZE.height,
-          width: DEFAULT_MAP_SIZE.width,
-        },
-      },
-    ] satisfies MapEntity[]);
-
-type MapEntity = {
+export type MapEntity = {
   id: string;
   name: string;
   tilesIndexes: number[];
@@ -101,7 +70,18 @@ type MapEntity = {
   };
 };
 
-export const mapsAtom = atom<MapEntity[]>(initialMaps);
+const initialMaps: MapEntity[] = [
+  {
+    id: "default",
+    name: "default",
+    tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
+    size: {
+      height: DEFAULT_MAP_SIZE.height,
+      width: DEFAULT_MAP_SIZE.width,
+    },
+  },
+];
+export const mapsAtom = atom(initialMaps);
 export const currentMapIndexAtom = atom(0);
 export const setMapTileIndexesAtom = atom(
   null,
@@ -183,7 +163,10 @@ export const isVisibleMapGridAtom = atom(true);
 export const isVisibleMapOverlayAtom = atom(true);
 export const highlightMetaTilesAtom = atom<number[]>([]);
 
-export const tileSetsAtom = atom<TileSet[]>(tileSetInitialValue);
+const initialTileSets: TileSet[] = [
+  { filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) },
+];
+export const tileSetsAtom = atom(initialTileSets);
 
 export const mapEditorCanvasAtom = atom((get) => {
   const maps = get(mapsAtom);

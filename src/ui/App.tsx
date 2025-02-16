@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import "./App.css";
-import { AutoSaver } from "./AutoSaver";
 import { Layout } from "./Layout";
 import { Toolbar } from "./Toolbar";
 import { useSetAtom } from "jotai";
@@ -32,7 +31,6 @@ function App() {
     <main className="bg-gray-200 h-screen w-screen flex flex-col">
       <Toolbar />
       <Layout />
-      <AutoSaver enabled={false} />
     </main>
   );
 }
