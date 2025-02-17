@@ -3,9 +3,9 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { TileSet, tileSetsAtom } from "../state";
 import { atom } from "jotai";
 
-const filters = [{ name: "GBGE TileSet", extensions: ["gbge-tileset"] }];
+const filters = [{ name: "GBGE TileSet", extensions: ["gbge-tilesets"] }];
 
-export const saveTileSetAtom = atom(null, async (get) => {
+export const saveTileSetsAtom = atom(null, async (get) => {
   const tileSets = get(tileSetsAtom);
   const tileSetsJson = JSON.stringify(tileSets);
   const savePath = await save({ filters });
@@ -13,7 +13,7 @@ export const saveTileSetAtom = atom(null, async (get) => {
   await writeTextFile(savePath, tileSetsJson);
 });
 
-export const loadTileSetAtom = atom(null, async (_, set) => {
+export const loadTileSetsAtom = atom(null, async (_, set) => {
   const loadPath = await open({ filters });
   if (!loadPath) return;
   const tileSetsJson = await readTextFile(loadPath);

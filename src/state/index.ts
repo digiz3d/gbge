@@ -19,8 +19,6 @@ export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
 export type TileSet = { filename: string; tiles: Tile[] };
 
-const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
-
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
@@ -68,8 +66,13 @@ export type MapEntity = {
     height: number;
     width: number;
   };
+  worldCoords: {
+    x: number;
+    y: number;
+  };
 };
 
+const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 const initialMaps: MapEntity[] = [
   {
     id: "default",
@@ -78,6 +81,10 @@ const initialMaps: MapEntity[] = [
     size: {
       height: DEFAULT_MAP_SIZE.height,
       width: DEFAULT_MAP_SIZE.width,
+    },
+    worldCoords: {
+      x: 0,
+      y: 0,
     },
   },
 ];
