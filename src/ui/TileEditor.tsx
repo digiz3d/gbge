@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
-  const paintIndex = useAtomValue(selectedPaintIndexAtom);
+  const [paintIndex, setPaintIndex] = useAtom(selectedPaintIndexAtom);
   const [isDrawing, setIsDrawing] = useState(false);
 
   const [tile, setTile] = useAtom(
@@ -25,8 +25,6 @@ export function TileEditor() {
       );
     }, [tab, currentSelection])
   );
-
-  const ref = useRef<HTMLDivElement>(null);
 
   const [draft, setDraft] = useAtom(
     useMemo(() => {
@@ -52,29 +50,31 @@ export function TileEditor() {
   }
 
   return (
-    <div
-      onMouseDown={(e) => {
-        e.preventDefault();
-        setIsDrawing(true);
-      }}
-      ref={ref}
-      className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden"
-    >
+    <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden">
       {draft.map((pixel, i) => (
         <div
           className="h-[32px] w-[32px] ring hover:contrast-125"
           key={i}
-          onClick={() => {
-            const clonedTile = [...draft];
-            clonedTile[i] = paintIndex;
-            setDraft(clonedTile);
+          onContextMenu={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            if (e.button === 1) {
+              setPaintIndex((x) => ((x + 1) % 4) as Color);
+            }
           }}
-          onMouseDown={() => {
-            const clonedTile = [...draft];
-            clonedTile[i] = paintIndex;
-            setDraft(clonedTile);
+          onMouseDown={(e) => {
+            if (e.button === 0) {
+              setIsDrawing(true);
+              const clonedTile = [...draft];
+              clonedTile[i] = paintIndex;
+              setDraft(clonedTile);
+            }
+            if (e.button === 2) {
+              setPaintIndex(draft[i]);
+            }
           }}
           onMouseOver={(e) => {
+            if (e.button !== 0) return;
             if (isDrawing) {
               e.preventDefault();
               const clonedTile = [...draft];
