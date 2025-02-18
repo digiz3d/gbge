@@ -29,6 +29,29 @@ export const mapSizeAtom = atom((get) => {
   };
 });
 
+export const createMapAtom = atom(
+  null,
+  (get, set, id: string, name: string, width: number, height: number) => {
+    const maps = get(mapsAtom);
+    const maxBottom = Math.max(
+      ...maps.map((map) => map.worldCoords.y + map.size.height)
+    );
+    const maxRight = Math.max(
+      ...maps.map((map) => map.worldCoords.x + map.size.width)
+    );
+
+    const newMap: MapEntity = {
+      id,
+      name,
+      tilesIndexes: n(width * height, 0),
+      size: { width, height },
+      worldCoords: { x: maxRight, y: maxBottom - height },
+    };
+
+    set(mapsAtom, [...get(mapsAtom), newMap]);
+  }
+);
+
 export const resizeMapAtom = atom(
   null,
   (get, set, width: number, height: number) => {
@@ -72,7 +95,7 @@ export type MapEntity = {
   };
 };
 
-const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
+export const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 const initialMaps: MapEntity[] = [
   {
     id: "default",
