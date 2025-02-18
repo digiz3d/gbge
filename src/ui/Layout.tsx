@@ -7,8 +7,13 @@ import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
 import { MetaHighlightOverlay } from "./MapEditor/MetaHighlightOverlay";
 import { GridOverlay } from "./MapEditor/GridOverlay";
 import { MapsTabs } from "./MapsTabs/MapsTabs";
+import { useAtomValue } from "jotai";
+import { worldmapAtom } from "../state/ui";
+import { Worldmap } from "./Worldmap";
 
 export function Layout() {
+  const worldmap = useAtomValue(worldmapAtom);
+
   return (
     <div className="flex flex-row h-full p-4">
       <div className="flex flex-col h-full">
@@ -19,15 +24,19 @@ export function Layout() {
           <TileSetViewer />
         </div>
       </div>
-      <div className="flex-1 flex items-center justify-center flex-col">
-        <MapsTabs />
-        <div className="relative h-[600px] w-[600px] overflow-scroll">
-          <MapEditor />
-          <MapVisibleOverlay />
-          <MetaHighlightOverlay />
-          <GridOverlay />
+      {worldmap ? (
+        <Worldmap />
+      ) : (
+        <div className="flex-1 flex items-center justify-center flex-col">
+          <MapsTabs />
+          <div className="relative h-[600px] w-[600px] overflow-scroll">
+            <MapEditor />
+            <MapVisibleOverlay />
+            <MetaHighlightOverlay />
+            <GridOverlay />
+          </div>
         </div>
-      </div>
+      )}
       <div className="flex flex-col h-full">
         <MetaTileCompute />
         <div className="grow-1 shrink-0 basis-0 overflow-auto">

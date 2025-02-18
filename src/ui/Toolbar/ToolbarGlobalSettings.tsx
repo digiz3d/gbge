@@ -4,14 +4,14 @@ import { BeltTileButton } from "./Belt/BeltTileButton";
 import { Tile } from "../../state";
 import { useSetAtom } from "jotai";
 import { loadMapsAtom, saveMapsAtom } from "../../saves/save-maps";
-import { loadTileSetAtom, saveTileSetAtom } from "../../saves/save-tileset";
+import { loadTileSetsAtom, saveTileSetsAtom } from "../../saves/save-tileset";
 
 export function ToolbarGlobalSettings() {
   const [isResizeMapModalOpen, setIsResizeMapModalOpen] = useState(false);
   const loadMaps = useSetAtom(loadMapsAtom);
   const saveMaps = useSetAtom(saveMapsAtom);
-  const loadTileSet = useSetAtom(loadTileSetAtom);
-  const saveTileSet = useSetAtom(saveTileSetAtom);
+  const loadTileSet = useSetAtom(loadTileSetsAtom);
+  const saveTileSet = useSetAtom(saveTileSetsAtom);
 
   return (
     <div className="flex flex-row gap-1 justify-end">

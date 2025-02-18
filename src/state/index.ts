@@ -19,8 +19,6 @@ export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
 export type TileSet = { filename: string; tiles: Tile[] };
 
-const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
-
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
@@ -30,6 +28,29 @@ export const mapSizeAtom = atom((get) => {
     height: map.size.height,
   };
 });
+
+export const createMapAtom = atom(
+  null,
+  (get, set, id: string, name: string, width: number, height: number) => {
+    const maps = get(mapsAtom);
+    const maxBottom = Math.max(
+      ...maps.map((map) => map.worldCoords.y + map.size.height)
+    );
+    const maxRight = Math.max(
+      ...maps.map((map) => map.worldCoords.x + map.size.width)
+    );
+
+    const newMap: MapEntity = {
+      id,
+      name,
+      tilesIndexes: n(width * height, 0),
+      size: { width, height },
+      worldCoords: { x: maxRight, y: maxBottom - height },
+    };
+
+    set(mapsAtom, [...get(mapsAtom), newMap]);
+  }
+);
 
 export const resizeMapAtom = atom(
   null,
@@ -68,8 +89,13 @@ export type MapEntity = {
     height: number;
     width: number;
   };
+  worldCoords: {
+    x: number;
+    y: number;
+  };
 };
 
+export const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 const initialMaps: MapEntity[] = [
   {
     id: "default",
@@ -78,6 +104,10 @@ const initialMaps: MapEntity[] = [
     size: {
       height: DEFAULT_MAP_SIZE.height,
       width: DEFAULT_MAP_SIZE.width,
+    },
+    worldCoords: {
+      x: 0,
+      y: 0,
     },
   },
 ];
