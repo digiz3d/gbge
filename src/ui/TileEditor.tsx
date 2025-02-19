@@ -8,7 +8,7 @@ import {
 } from "../state";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
