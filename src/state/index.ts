@@ -17,7 +17,7 @@ export const pixelToRgb = colorPalette.map(
 
 export type Color = 0 | 1 | 2 | 3;
 export type Tile = Color[];
-export type TileSet = { filename: string; tiles: Tile[] };
+export type TileSet = { name: string; tiles: Tile[] };
 
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
@@ -194,7 +194,10 @@ export const isVisibleMapOverlayAtom = atom(true);
 export const highlightMetaTilesAtom = atom<number[]>([]);
 
 const initialTileSets: TileSet[] = [
-  { filename: "string.tileset", tiles: n(128, () => n<Color>(64, 0)) },
+  {
+    name: "default",
+    tiles: n(128, () => n<Color>(64, 0)),
+  },
 ];
 export const tileSetsAtom = atom(initialTileSets);
 

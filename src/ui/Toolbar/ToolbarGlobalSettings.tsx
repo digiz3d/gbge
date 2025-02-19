@@ -5,6 +5,7 @@ import { Tile } from "../../state";
 import { useSetAtom } from "jotai";
 import { loadMapsAtom, saveMapsAtom } from "../../saves/save-maps";
 import { loadTileSetsAtom, saveTileSetsAtom } from "../../saves/save-tileset";
+import { exportToCAtom } from "../../saves/export-to-c";
 
 export function ToolbarGlobalSettings() {
   const [isResizeMapModalOpen, setIsResizeMapModalOpen] = useState(false);
@@ -12,6 +13,7 @@ export function ToolbarGlobalSettings() {
   const saveMaps = useSetAtom(saveMapsAtom);
   const loadTileSet = useSetAtom(loadTileSetsAtom);
   const saveTileSet = useSetAtom(saveTileSetsAtom);
+  const exportToC = useSetAtom(exportToCAtom);
 
   return (
     <div className="flex flex-row gap-1 justify-end">
@@ -27,6 +29,7 @@ export function ToolbarGlobalSettings() {
       <BeltTileButton tile={saveMapsIcon} onClick={saveMaps} />
       <BeltTileButton tile={loadTileSetIcon} onClick={loadTileSet} />
       <BeltTileButton tile={saveTileSetIcon} onClick={saveTileSet} />
+      <BeltTileButton tile={exportToCIcon} onClick={exportToC} />
     </div>
   );
 }
@@ -88,5 +91,17 @@ const saveTileSetIcon: Tile = [
   0, 3, 3, 2, 3, 2, 3, 0,
   0, 3, 3, 2, 3, 3, 3, 0,
   0, 3, 3, 3, 3, 3, 3, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+];
+
+/* prettier-ignore */
+const exportToCIcon: Tile = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 2, 3, 3, 0, 0,
+  0, 0, 2, 3, 0, 2, 3, 0,
+  0, 0, 2, 3, 0, 0, 0, 0,
+  0, 0, 2, 3, 0, 0, 0, 0,
+  0, 0, 2, 3, 0, 2, 3, 0,
+  0, 3, 0, 2, 3, 3, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
 ];
