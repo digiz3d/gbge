@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0](https://github.com/digiz3d/gbge/compare/v0.4.0...v0.5.0) (2025-02-19)
+
+
+### Features
+
+* export to C files ([#12](https://github.com/digiz3d/gbge/issues/12)) ([33b69bd](https://github.com/digiz3d/gbge/commit/33b69bd838983d0e69041c15e8bd3865359d7681))
+* load and save ([#8](https://github.com/digiz3d/gbge/issues/8)) ([e691d3a](https://github.com/digiz3d/gbge/commit/e691d3a764869a135aa9f01a38198170de472dba))
+* some QoL shortcuts ([#11](https://github.com/digiz3d/gbge/issues/11)) ([9b6f132](https://github.com/digiz3d/gbge/commit/9b6f132349cbe4bffa1266dcdadc932240e96185))
+* worldmap view ([#10](https://github.com/digiz3d/gbge/issues/10)) ([7084f78](https://github.com/digiz3d/gbge/commit/7084f78568720023ac54825ad830310ec4cef5cc))
+
 ## [0.4.0](https://github.com/digiz3d/gbge/compare/v0.3.1...v0.4.0) (2025-02-15)
 
 
