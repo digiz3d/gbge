@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/digiz3d/gbge/compare/v0.5.0...v0.5.1) (2025-02-19)
+
+
+### Bug Fixes
+
+* properly build ([c906311](https://github.com/digiz3d/gbge/commit/c90631193a49dccbe8d70f88d12efe686e1f59ef))
+
 ## [0.5.0](https://github.com/digiz3d/gbge/compare/v0.4.0...v0.5.0) (2025-02-19)
 
 
