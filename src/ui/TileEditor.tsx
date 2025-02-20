@@ -55,7 +55,6 @@ export function TileEditor() {
         <div
           className="h-[32px] w-[32px] ring hover:contrast-125"
           key={i}
-          onContextMenu={(e) => e.preventDefault()}
           onClick={(e) => {
             e.preventDefault();
             if (e.button === 1) {

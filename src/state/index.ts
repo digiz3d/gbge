@@ -214,6 +214,23 @@ export const mapEditorCanvasAtom = atom((get) => {
   });
 });
 
+export const moveMapInWorldAtom = atom(
+  null,
+  (get, set, mapIndex: number, newX: number, newY: number) => {
+    const maps = get(mapsAtom);
+    const draft = structuredClone(maps);
+    draft[mapIndex].worldCoords.x = Math.round(newX);
+    if (draft[mapIndex].worldCoords.x < 0) {
+      draft[mapIndex].worldCoords.x = 0;
+    }
+    draft[mapIndex].worldCoords.y = Math.round(newY);
+    if (draft[mapIndex].worldCoords.y < 0) {
+      draft[mapIndex].worldCoords.y = 0;
+    }
+    set(mapsAtom, draft);
+  }
+);
+
 export const currentTileSetTilesAtom = atom((get) => {
   const currentTileSetIndex = get(selectedTabIndexAtom);
   const tileSets = get(tileSetsAtom);
