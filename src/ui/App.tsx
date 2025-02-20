@@ -28,7 +28,10 @@ function App() {
   }, []);
 
   return (
-    <main className="bg-gray-200 h-screen w-screen flex flex-col">
+    <main
+      className="bg-gray-200 h-screen w-screen flex flex-col"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       <Toolbar />
       <Layout />
     </main>
