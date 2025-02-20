@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/digiz3d/gbge/compare/v0.5.1...v0.6.0) (2025-02-20)
+
+
+### Features
+
+* move maps around, zoom on worldmap ([#14](https://github.com/digiz3d/gbge/issues/14)) ([d833eea](https://github.com/digiz3d/gbge/commit/d833eea19c6ae4687ad9af013cc6bd619b6db211))
+
 ## [0.5.1](https://github.com/digiz3d/gbge/compare/v0.5.0...v0.5.1) (2025-02-19)
 
 
