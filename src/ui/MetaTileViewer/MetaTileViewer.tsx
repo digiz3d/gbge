@@ -5,6 +5,7 @@ import {
   highlightMetaTilesAtom,
   currentSelectionAtom,
   currentMapIndexAtom,
+  hoveredMetaTileIndexAtom,
 } from "../../state";
 import { createTileImage } from "../../utils/tileImage";
 
@@ -12,10 +13,9 @@ export function MetaTileViewer() {
   const metaTiles = useAtomValue(metaTilesAtom);
   const tiles = useAtomValue(currentTileSetTilesAtom);
   const setHoveringMetaTile = useSetAtom(highlightMetaTilesAtom);
+  const setHoveredMetaTileIndex = useSetAtom(hoveredMetaTileIndexAtom);
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
   const currentMapIndex = useAtomValue(currentMapIndexAtom);
-
-  if (currentMapIndex === null) return null;
 
   return (
     <div className="grid grid-cols-2 w-[256px] h-fit">
@@ -24,7 +24,11 @@ export function MetaTileViewer() {
           currentSelection.mode === "metaTile" &&
           index === currentSelection.index;
 
-        const locallySpotted = spottedAt.get(currentMapIndex)?.length ?? 0;
+        const locallySpotted = currentMapIndex
+          ? spottedAt.get(currentMapIndex) ?? null
+          : null;
+
+        const locallySpottedLen = locallySpotted?.length ?? 0;
 
         return (
           <div
@@ -33,13 +37,21 @@ export function MetaTileViewer() {
             }`}
             key={index}
             onClick={() => setCurrentSelection({ mode: "metaTile", index })}
-            onMouseEnter={() =>
-              setHoveringMetaTile(spottedAt.get(currentMapIndex) ?? [])
-            }
-            onMouseLeave={() => setHoveringMetaTile([])}
+            onMouseEnter={() => {
+              setHoveredMetaTileIndex(index);
+              setHoveringMetaTile(locallySpotted ?? []);
+            }}
+            onMouseLeave={() => {
+              setHoveredMetaTileIndex(null);
+              setHoveringMetaTile([]);
+            }}
           >
-            <div className="text-xs absolute bottom-1 right-1 text-white font-bold">
-              {locallySpotted} [{spottedCount}]
+            <div className="text-xs absolute bottom-1 text-white font-bold flex flex-row justify-between w-full">
+              <div className="text ml-1">
+                {locallySpotted ? locallySpottedLen : null}
+              </div>
+
+              <div className="mr-1">{spottedCount}</div>
             </div>
             {tileIndexes.map((tileIndex, j) => (
               <img

@@ -1,29 +1,84 @@
 import { Belt } from "./Belt/index.tsx";
 import {
+  areMapIdsVisibleAtom,
   isVisibleMapGridAtom,
   isVisibleMapOverlayAtom,
+  pixelToRgb,
+  Tile,
 } from "../../state/index.ts";
 import { useAtom } from "jotai";
-import { BeltToggleButton } from "./Belt/BeltToggleButton.tsx";
+import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
 
 export function ToolbarMapEditor() {
-  const [isGridVisible, setIsGridVisible] = useAtom(isVisibleMapGridAtom);
-  const [isOverlayVisible, setIsOverlayVisible] = useAtom(
-    isVisibleMapOverlayAtom
-  );
+  const [isGridVisible, toggleGrid] = useAtom(isVisibleMapGridAtom);
+  const [isOverlayVisible, toggleScreen] = useAtom(isVisibleMapOverlayAtom);
+  const [areMapIdsVisible, toggleMapIDs] = useAtom(areMapIdsVisibleAtom);
 
   return (
     <div className="self-center">
       <Belt>
-        <BeltToggleButton
-          enabled={isGridVisible}
-          onClick={() => setIsGridVisible((x) => !x)}
+        <BeltTileButton
+          tile={grid}
+          onClick={toggleGrid}
+          colors={
+            isGridVisible
+              ? undefined
+              : [pixelToRgb[0], pixelToRgb[0], pixelToRgb[0], pixelToRgb[1]]
+          }
         />
-        <BeltToggleButton
-          enabled={isOverlayVisible}
-          onClick={() => setIsOverlayVisible((x) => !x)}
+        <BeltTileButton
+          tile={screen}
+          onClick={toggleScreen}
+          colors={
+            isOverlayVisible ? [pixelToRgb[0], "rgb(255,0,0)"] : undefined
+          }
+        />
+        <BeltTileButton
+          tile={ID}
+          onClick={toggleMapIDs}
+          colors={
+            areMapIdsVisible
+              ? undefined
+              : [pixelToRgb[0], pixelToRgb[0], pixelToRgb[0], pixelToRgb[1]]
+          }
         />
       </Belt>
     </div>
   );
 }
+
+/* prettier-ignore */
+const grid: Tile = [
+  0, 0, 3, 0, 0, 3, 0, 0,
+  0, 0, 3, 0, 0, 3, 0, 0,
+  3, 3, 3, 3, 3, 3, 3, 3,
+  0, 0, 3, 0, 0, 3, 0, 0,
+  0, 0, 3, 0, 0, 3, 0, 0,
+  3, 3, 3, 3, 3, 3, 3, 3,
+  0, 0, 3, 0, 0, 3, 0, 0,
+  0, 0, 3, 0, 0, 3, 0, 0,
+];
+
+/* prettier-ignore */
+const screen: Tile = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 1, 1, 1, 1, 1, 1, 0,
+  0, 1, 0, 0, 0, 0, 1, 0,
+  0, 1, 0, 0, 0, 0, 1, 0,
+  0, 1, 0, 0, 0, 0, 1, 0,
+  0, 1, 0, 0, 0, 0, 1, 0,
+  0, 1, 1, 1, 1, 1, 1, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+];
+
+/* prettier-ignore */
+const ID: Tile = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 3, 0, 3, 3, 3, 0, 0,
+  0, 3, 0, 3, 0, 0, 3, 0,
+  0, 3, 0, 3, 0, 0, 3, 0,
+  0, 3, 0, 3, 0, 0, 3, 0,
+  0, 3, 0, 3, 0, 0, 3, 0,
+  0, 3, 0, 3, 3, 3, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+];

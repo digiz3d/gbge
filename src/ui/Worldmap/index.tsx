@@ -1,7 +1,9 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   deleteMapByIndexAtom,
+  hoveredMetaTileIndexAtom,
   mapsAtom,
+  metaTilesAtom,
   moveMapInWorldAtom,
   tileSetsAtom,
 } from "../../state";
@@ -23,6 +25,13 @@ const currentZoomAtom = atom(8);
 export function Worldmap() {
   const [currentPanning, setCurrentPanning] = useAtom(currentPanningAtom);
   const [zoom, setZoom] = useAtom(currentZoomAtom);
+
+  const metaTiles = useAtomValue(metaTilesAtom);
+  const hoveredMetaTileIndex = useAtomValue(hoveredMetaTileIndexAtom);
+  const metaTileSpottedInMap =
+    hoveredMetaTileIndex !== null
+      ? metaTiles[hoveredMetaTileIndex].spottedAt
+      : null;
 
   const deleteMap = useSetAtom(deleteMapByIndexAtom);
   const [hoverMapIndex, setHoverMapIndex] = useState<number | null>(null);
@@ -177,11 +186,14 @@ export function Worldmap() {
           >
             <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
+              const isHighlighted = metaTileSpottedInMap?.has(index) ?? false;
+
               return (
                 <MapPreview
                   key={map.id}
                   map={map}
                   tileSet={tileSet}
+                  isHighlighted={isHighlighted}
                   height={zoom * map.size.height}
                   width={zoom * map.size.width}
                   x={currentPanning.x + zoom * map.worldCoords.x}
