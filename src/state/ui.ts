@@ -9,6 +9,6 @@ export const focusToEditMapAtom = atom(null, (_, set, index: number) => {
 });
 
 export const unfocusMapToEditAtom = atom(null, (_, set) => {
-  set(currentMapIndexAtom, 0);
+  set(currentMapIndexAtom, null);
   set(worldmapAtom, true);
 });

@@ -22,6 +22,7 @@ export type TileSet = { name: string; tiles: Tile[] };
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
+  if (mapIndex === null) return { width: 0, height: 0 };
   const map = maps[mapIndex];
   return {
     width: map.size.width,
@@ -31,7 +32,7 @@ export const mapSizeAtom = atom((get) => {
 
 export const createMapAtom = atom(
   null,
-  (get, set, id: string, name: string, width: number, height: number) => {
+  (get, set, id: string, width: number, height: number) => {
     const maps = get(mapsAtom);
     const maxBottom = Math.max(
       ...maps.map((map) => map.worldCoords.y + map.size.height)
@@ -42,7 +43,6 @@ export const createMapAtom = atom(
 
     const newMap: MapEntity = {
       id,
-      name,
       tilesIndexes: n(width * height, 0),
       size: { width, height },
       worldCoords: { x: maxRight, y: maxBottom - height },
@@ -60,6 +60,8 @@ export const resizeMapAtom = atom(
 
     const maps = get(mapsAtom);
     const mapIndex = get(currentMapIndexAtom);
+    if (mapIndex === null) return;
+
     const arr = maps[mapIndex].tilesIndexes;
 
     // resize rows first as they have no impact on width/nb of columns
@@ -83,7 +85,6 @@ export function n<T>(length: number, value: T | (() => T)): T[] {
 
 export type MapEntity = {
   id: string;
-  name: string;
   tilesIndexes: number[];
   size: {
     height: number;
@@ -99,7 +100,6 @@ export const DEFAULT_MAP_SIZE = { width: 32, height: 32 };
 const initialMaps: MapEntity[] = [
   {
     id: "default",
-    name: "default",
     tilesIndexes: n(DEFAULT_MAP_SIZE.width * DEFAULT_MAP_SIZE.height, 0),
     size: {
       height: DEFAULT_MAP_SIZE.height,
@@ -112,12 +112,13 @@ const initialMaps: MapEntity[] = [
   },
 ];
 export const mapsAtom = atom(initialMaps);
-export const currentMapIndexAtom = atom(0);
+export const currentMapIndexAtom = atom<number | null>(null);
 export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
     const currentMapIndex = get(currentMapIndexAtom);
+    if (currentMapIndex === null) return;
     const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
 
     if (currentSelection.mode !== "tile") return;
@@ -137,6 +138,8 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
   (get, set, metaTileX: number, metaTileY: number) => {
     const currentSelection = get(currentSelectionAtom);
     const mapIndex = get(currentMapIndexAtom);
+
+    if (mapIndex === null) return;
     if (currentSelection.mode !== "metaTile") return;
 
     const { width: MAP_WIDTH } = get(mapSizeAtom);
@@ -204,6 +207,7 @@ export const tileSetsAtom = atom(initialTileSets);
 export const mapEditorCanvasAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
+  if (mapIndex === null) return [];
   const tileSets = get(tileSetsAtom);
 
   return maps[mapIndex].tilesIndexes.map((tileIndex) => {
@@ -218,18 +222,21 @@ export const moveMapInWorldAtom = atom(
   null,
   (get, set, mapIndex: number, newX: number, newY: number) => {
     const maps = get(mapsAtom);
-    const draft = structuredClone(maps);
-    draft[mapIndex].worldCoords.x = Math.round(newX);
-    if (draft[mapIndex].worldCoords.x < 0) {
-      draft[mapIndex].worldCoords.x = 0;
-    }
-    draft[mapIndex].worldCoords.y = Math.round(newY);
-    if (draft[mapIndex].worldCoords.y < 0) {
-      draft[mapIndex].worldCoords.y = 0;
-    }
-    set(mapsAtom, draft);
+    maps[mapIndex].worldCoords.x = Math.round(newX);
+    maps[mapIndex].worldCoords.y = Math.round(newY);
+    set(mapsAtom, maps);
   }
 );
+
+export const deleteMapByIndexAtom = atom(null, (get, set, mapIndex: number) => {
+  const maps = get(mapsAtom);
+  if (maps.length === 1) {
+    return;
+  }
+  const draft = structuredClone(maps);
+  draft.splice(mapIndex, 1);
+  set(mapsAtom, draft);
+});
 
 export const currentTileSetTilesAtom = atom((get) => {
   const currentTileSetIndex = get(selectedTabIndexAtom);

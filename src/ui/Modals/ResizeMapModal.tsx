@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
 import { useAtomValue, useSetAtom } from "jotai";
-import { mapSizeAtom, resizeMapAtom } from "../../state";
+import { currentMapIndexAtom, mapSizeAtom, resizeMapAtom } from "../../state";
 
 export function ResizeMapModal({
   close,
@@ -12,6 +12,7 @@ export function ResizeMapModal({
 }) {
   const { width: mapWidth, height: mapHeight } = useAtomValue(mapSizeAtom);
   const resizeMap = useSetAtom(resizeMapAtom);
+  const currentMapIndex = useAtomValue(currentMapIndexAtom);
 
   const [width, setWidth] = useState(mapWidth);
   const [height, setHeight] = useState(mapHeight);
@@ -22,10 +23,25 @@ export function ResizeMapModal({
   }, [mapWidth, mapHeight]);
 
   if (!isOpen) return null;
+  if (currentMapIndex === null) {
+    return (
+      <Modal onClick={close}>
+        <div
+          className="flex flex-col gap-2 max-w-64 bg-white p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h1>No map selected</h1>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
-    <Modal>
-      <div className="flex flex-col gap-2 max-w-64 bg-white p-4">
+    <Modal onClick={close}>
+      <div
+        className="flex flex-col gap-2 max-w-64 bg-white p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h1>Map size</h1>
         <div className="grid grid-cols-2 gap-2">
           <span className="pr-2">Width</span>
