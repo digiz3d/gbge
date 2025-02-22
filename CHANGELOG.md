@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/digiz3d/gbge/compare/v0.6.0...v0.6.1) (2025-02-22)
+
+
+### Bug Fixes
+
+* replace worldmap with canvas based solution ([#16](https://github.com/digiz3d/gbge/issues/16)) ([79a67f4](https://github.com/digiz3d/gbge/commit/79a67f414cf4fe497062de45769512f3183948c4))
+
 ## [0.6.0](https://github.com/digiz3d/gbge/compare/v0.5.1...v0.6.0) (2025-02-20)
 
 
