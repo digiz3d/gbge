@@ -22,6 +22,7 @@ export type TileSet = { name: string; tiles: Tile[] };
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
+  if (mapIndex === null) return { width: 0, height: 0 };
   const map = maps[mapIndex];
   return {
     width: map.size.width,
@@ -59,6 +60,8 @@ export const resizeMapAtom = atom(
 
     const maps = get(mapsAtom);
     const mapIndex = get(currentMapIndexAtom);
+    if (mapIndex === null) return;
+
     const arr = maps[mapIndex].tilesIndexes;
 
     // resize rows first as they have no impact on width/nb of columns
@@ -109,12 +112,13 @@ const initialMaps: MapEntity[] = [
   },
 ];
 export const mapsAtom = atom(initialMaps);
-export const currentMapIndexAtom = atom(0);
+export const currentMapIndexAtom = atom<number | null>(null);
 export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
     const currentMapIndex = get(currentMapIndexAtom);
+    if (currentMapIndex === null) return;
     const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
 
     if (currentSelection.mode !== "tile") return;
@@ -134,6 +138,8 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
   (get, set, metaTileX: number, metaTileY: number) => {
     const currentSelection = get(currentSelectionAtom);
     const mapIndex = get(currentMapIndexAtom);
+
+    if (mapIndex === null) return;
     if (currentSelection.mode !== "metaTile") return;
 
     const { width: MAP_WIDTH } = get(mapSizeAtom);
@@ -201,6 +207,7 @@ export const tileSetsAtom = atom(initialTileSets);
 export const mapEditorCanvasAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
+  if (mapIndex === null) return [];
   const tileSets = get(tileSetsAtom);
 
   return maps[mapIndex].tilesIndexes.map((tileIndex) => {

@@ -15,8 +15,8 @@
         "title": "gbge",
         "width": 1200,
         "height": 800,
-        "resizable": false,
-        "fullscreen": false
+        "minWidth": 1200,
+        "minHeight": 800
       }
     ],
     "security": {

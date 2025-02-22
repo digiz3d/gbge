@@ -15,6 +15,8 @@ export function MetaTileViewer() {
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
   const currentMapIndex = useAtomValue(currentMapIndexAtom);
 
+  if (currentMapIndex === null) return null;
+
   return (
     <div className="grid grid-cols-2 w-[256px] h-fit">
       {metaTiles.map(({ spottedAt, spottedCount, tileIndexes }, index) => {

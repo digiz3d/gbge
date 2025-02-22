@@ -27,7 +27,7 @@ export function Layout() {
       {worldmap ? (
         <Worldmap />
       ) : (
-        <div className="flex-1 flex items-center justify-center flex-col">
+        <div className="flex-1 flex items-center flex-col">
           <MapsTabs />
           <div className="relative h-[600px] w-[600px] overflow-scroll">
             <MapEditor />

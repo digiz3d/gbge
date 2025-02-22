@@ -11,6 +11,7 @@ import { WorldMapInfo } from "./WorldMapInfo";
 
 import { Stage, Layer, Rect } from "react-konva";
 import { MapPreview } from "./MapPreview";
+import { WorldMapOrigin } from "./WorldMapOrigin";
 
 const LEFT_CLICK = 0;
 const MIDDLE_CLICK = 1;
@@ -81,8 +82,16 @@ export function Worldmap() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    setCanvasSize({ width, height });
+    const updateSize = () => {
+      if (!containerRef.current) return;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      setCanvasSize({ width, height });
+    };
+
+    updateSize();
+
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
   }, [containerRef.current]);
 
   return (
@@ -100,12 +109,27 @@ export function Worldmap() {
             e.evt.preventDefault();
             e.evt.stopPropagation();
             if (grabbing) return;
-            setZoom((x) => {
+
+            setZoom((prevZoom) => {
               const isNegative = e.evt.deltaY < 0;
-              if (isNegative) {
-                return Math.min(x + 1, 16);
-              }
-              return Math.max(x - 1, 1);
+              const newZoom = isNegative
+                ? Math.min(prevZoom + 1, 16)
+                : Math.max(prevZoom - 1, 1);
+
+              const centerOfView = {
+                x:
+                  canvasSize.width / 2 / prevZoom - currentPanning.x / prevZoom,
+                y:
+                  canvasSize.height / 2 / prevZoom -
+                  currentPanning.y / prevZoom,
+              };
+
+              setCurrentPanning({
+                x: -centerOfView.x * newZoom + canvasSize.width / 2,
+                y: -centerOfView.y * newZoom + canvasSize.height / 2,
+              });
+
+              return newZoom;
             });
           }}
           onMouseDown={(e) => {
@@ -146,7 +170,12 @@ export function Worldmap() {
             }
           }}
         >
-          <Layer imageSmoothingEnabled={zoom <= 8 ? true : false}>
+          <Layer
+            imageSmoothingEnabled={
+              zoom <= 8 ? true : false // allows seeing shapes that would disappear when zoomed out, due to pixelation
+            }
+          >
+            <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
               return (
                 <MapPreview
@@ -193,15 +222,13 @@ export function Worldmap() {
               );
             })}
             {grabbing && (
-              <>
-                <Rect
-                  x={grabbing.mapX}
-                  y={grabbing.mapY}
-                  width={grabbing.width}
-                  height={grabbing.height}
-                  fill="rgba(0,0,255,0.2)"
-                />
-              </>
+              <Rect
+                x={grabbing.mapX}
+                y={grabbing.mapY}
+                width={grabbing.width}
+                height={grabbing.height}
+                fill="rgba(0,0,255,0.2)"
+              />
             )}
           </Layer>
         </Stage>
