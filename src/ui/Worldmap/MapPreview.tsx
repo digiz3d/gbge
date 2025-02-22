@@ -3,8 +3,10 @@ import { useMemo } from "react";
 import { Image, Rect, Text } from "react-konva";
 import useImage from "use-image";
 import { createMapImage } from "../../utils/tileImage";
-import { areMapIdsVisibleAtom, MapEntity, TileSet } from "../../state";
 import { useAtomValue } from "jotai";
+import { MapEntity } from "../../state/map";
+import { areMapIdsVisibleAtom } from "../../state/ui";
+import { TileSet } from "../../state/tiles";
 
 export function MapPreview(props: {
   map: MapEntity;

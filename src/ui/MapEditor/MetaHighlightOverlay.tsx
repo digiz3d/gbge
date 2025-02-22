@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
-import { highlightMetaTilesAtom, mapSizeAtom } from "../../state";
+import { highlightMetaTilesAtom } from "../../state/metatile";
+import { mapSizeAtom } from "../../state/map";
 
 const TILE_SIZE = 16;
 

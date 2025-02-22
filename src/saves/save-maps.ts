@@ -1,12 +1,9 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import {
-  computeMetaTilesAtom,
-  currentMapIndexAtom,
-  MapEntity,
-  mapsAtom,
-} from "../state";
 import { atom } from "jotai";
+import { computeMetaTilesAtom } from "../state/metatile";
+import { MapEntity, mapsAtom } from "../state/map";
+import { currentMapIndexAtom } from "../state/ui";
 
 const filters = [{ name: "GBGE Maps", extensions: ["gbge-maps"] }];
 

@@ -1,13 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  metaTilesAtom,
-  currentTileSetTilesAtom,
-  highlightMetaTilesAtom,
-  currentSelectionAtom,
-  currentMapIndexAtom,
-  hoveredMetaTileIndexAtom,
-} from "../../state";
 import { createTileImage } from "../../utils/tileImage";
+import {
+  highlightMetaTilesAtom,
+  hoveredMetaTileIndexAtom,
+  metaTilesAtom,
+} from "../../state/metatile";
+import { currentTileSetTilesAtom } from "../../state/tileset";
+import { currentMapIndexAtom, currentSelectionAtom } from "../../state/ui";
 
 export function MetaTileViewer() {
   const metaTiles = useAtomValue(metaTilesAtom);

@@ -1,6 +1,5 @@
 import { Atom, useAtomValue } from "jotai";
-
-import { pixelToRgb, Tile } from "../state";
+import { pixelToRgb, Tile } from "../state/tiles";
 
 export function TileViewerButSmall({ tileAtom }: { tileAtom: Atom<Tile> }) {
   const tile = useAtomValue(tileAtom);

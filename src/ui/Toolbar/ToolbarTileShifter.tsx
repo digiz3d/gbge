@@ -1,8 +1,7 @@
-import { Belt } from "./Belt/index.tsx";
-import { shiftCurrentTileAtom, Tile } from "../../state/index.ts";
-import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
+import { Belt } from "./Belt";
+import { BeltTileButton } from "./Belt/BeltTileButton";
 import { useSetAtom } from "jotai";
-import { clockwise } from "../../state/shifting.ts";
+import { clockwise, shiftCurrentTileAtom, Tile } from "../../state/tiles";
 
 export function ToolbarTileShifter() {
   const shift = useSetAtom(shiftCurrentTileAtom);

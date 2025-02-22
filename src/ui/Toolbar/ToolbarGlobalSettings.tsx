@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ResizeMapModal } from "../Modals/ResizeMapModal";
 import { BeltTileButton } from "./Belt/BeltTileButton";
-import { Tile } from "../../state";
 import { useSetAtom } from "jotai";
 import { loadMapsAtom, saveMapsAtom } from "../../saves/save-maps";
 import { loadTileSetsAtom, saveTileSetsAtom } from "../../saves/save-tileset";
 import { exportToCAtom } from "../../saves/export-to-c";
+import type { Tile } from "../../state/tiles";
 
 export function ToolbarGlobalSettings() {
   const [isResizeMapModalOpen, setIsResizeMapModalOpen] = useState(false);

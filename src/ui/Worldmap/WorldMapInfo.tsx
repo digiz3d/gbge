@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
-import { mapsAtom } from "../../state";
 import { useState } from "react";
 import { CreateMapModal } from "./CreateMapModal";
+import { mapsAtom } from "../../state/map";
 
 export function WorldMapInfo() {
   const maps = useAtomValue(mapsAtom);

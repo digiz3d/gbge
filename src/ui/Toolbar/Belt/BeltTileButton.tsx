@@ -1,4 +1,4 @@
-import { pixelToRgb, Tile } from "../../../state";
+import { pixelToRgb, Tile } from "../../../state/tiles";
 
 export function BeltTileButton({
   colors = pixelToRgb,

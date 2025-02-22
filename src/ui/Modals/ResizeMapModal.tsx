@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
 import { useAtomValue, useSetAtom } from "jotai";
-import { currentMapIndexAtom, mapSizeAtom, resizeMapAtom } from "../../state";
+import { mapSizeAtom, resizeMapAtom } from "../../state/map";
+import { currentMapIndexAtom } from "../../state/ui";
 
 export function ResizeMapModal({
   close,
