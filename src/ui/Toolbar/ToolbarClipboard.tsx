@@ -1,8 +1,8 @@
-import { Belt } from "./Belt/index.tsx";
-import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
+import { Belt } from "./Belt";
+import { BeltTileButton } from "./Belt/BeltTileButton";
 import { useAtomValue } from "jotai";
-import { Tile } from "../../state/index.ts";
-import { copiedTileAtom } from "../../state/clipboard.ts";
+import { copiedTileAtom } from "../../state/clipboard";
+import { Tile } from "../../state/tiles";
 
 export function ToolbarClipboard() {
   const copiedTile = useAtomValue(copiedTileAtom);

@@ -1,6 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { currentMapIndexAtom } from "../../state";
-import { unfocusMapToEditAtom } from "../../state/ui";
+import { currentMapIndexAtom, unfocusMapToEditAtom } from "../../state/ui";
 import { mapsAtom } from "../../state/map";
 
 export function MapsTabs() {

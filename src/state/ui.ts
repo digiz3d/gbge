@@ -1,6 +1,14 @@
 import { atom } from "jotai";
-import { currentMapIndexAtom } from ".";
 import { atomWithToggle } from "./utils";
+import { Color } from "./tiles";
+
+export const currentMapIndexAtom = atom<number | null>(null);
+export const currentSelectionAtom = atom<{
+  mode: "tile" | "metaTile";
+  index: number;
+}>({ mode: "tile", index: 0 });
+export const selectedTabIndexAtom = atom(0);
+export const selectedPaintIndexAtom = atom<Color>(0);
 
 export const worldmapAtom = atom(true);
 export const isVisibleMapGridAtom = atomWithToggle(true);

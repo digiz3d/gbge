@@ -1,6 +1,7 @@
 import { atom } from "jotai";
-import { Color, selectedTabIndexAtom, TileSet } from ".";
 import { makeFilledArray } from "./utils";
+import { Color, TileSet } from "./tiles";
+import { selectedTabIndexAtom } from "./ui";
 
 const initialTileSets: TileSet[] = [
   {

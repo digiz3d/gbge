@@ -1,8 +1,8 @@
 import { atom } from "jotai";
 
-import { currentMapIndexAtom, currentSelectionAtom } from ".";
 import { tileSetsAtom } from "./tileset";
 import { makeFilledArray } from "./utils";
+import { currentMapIndexAtom, currentSelectionAtom } from "./ui";
 
 export type MapEntity = {
   id: string;

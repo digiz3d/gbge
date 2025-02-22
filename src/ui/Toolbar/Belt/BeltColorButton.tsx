@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
-import { Color, pixelToRgb, selectedPaintIndexAtom } from "../../../state";
+import { Color, pixelToRgb } from "../../../state/tiles";
+import { selectedPaintIndexAtom } from "../../../state/ui";
 
 export function BeltColorButton({
   buttonPaintIndex,

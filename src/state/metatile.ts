@@ -1,8 +1,9 @@
 import { atom, ExtractAtomValue } from "jotai";
 
-import { currentMapIndexAtom, currentSelectionAtom, Tile } from ".";
 import { focusAtom } from "jotai-optics";
 import { mapEditorCanvasAtom, mapsAtom, mapSizeAtom } from "./map";
+import { currentMapIndexAtom, currentSelectionAtom } from "./ui";
+import { Tile } from "./tiles";
 
 export const metaTilesAtom = atom<
   {

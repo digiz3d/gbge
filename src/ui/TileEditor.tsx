@@ -1,14 +1,13 @@
-import {
-  Color,
-  currentSelectionAtom,
-  pixelToRgb,
-  selectedPaintIndexAtom,
-  selectedTabIndexAtom,
-} from "../state";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { focusAtom } from "jotai-optics";
 import { useEffect, useMemo, useState } from "react";
 import { tileSetsAtom } from "../state/tileset";
+import {
+  currentSelectionAtom,
+  selectedPaintIndexAtom,
+  selectedTabIndexAtom,
+} from "../state/ui";
+import { Color, pixelToRgb } from "../state/tiles";
 
 export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);

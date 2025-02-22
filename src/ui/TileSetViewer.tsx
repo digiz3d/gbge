@@ -1,5 +1,4 @@
 import { useAtom, useAtomValue } from "jotai";
-import { currentSelectionAtom, selectedTabIndexAtom, Tile } from "../state";
 import { TileViewerButSmall } from "./TileViewerButSmall";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
@@ -7,10 +6,11 @@ import { useMemo } from "react";
 import { WritableAtom } from "jotai";
 import { SetStateAction } from "jotai";
 import { tileSetsAtom } from "../state/tileset";
+import { currentSelectionAtom, selectedTabIndexAtom } from "../state/ui";
+import { Tile } from "../state/tiles";
 
 export function TileSetViewer() {
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
-
   const tab = useAtomValue(selectedTabIndexAtom);
 
   const tiles = useAtomValue(

@@ -1,4 +1,4 @@
-import type { Tile } from ".";
+import type { Tile } from "./tiles";
 
 export function shiftLeft(tile: Tile) {
   const WIDTH = 8;

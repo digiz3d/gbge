@@ -1,6 +1,5 @@
 import { writeTextFile } from "@tauri-apps/plugin-fs";
 import { save } from "@tauri-apps/plugin-dialog";
-import { selectedTabIndexAtom, Tile } from "../state";
 import { atom } from "jotai";
 import {
   computeMetaTilesAtom,
@@ -9,6 +8,8 @@ import {
 } from "../state/metatile";
 import { MapEntity, mapsAtom } from "../state/map";
 import { tileSetsAtom } from "../state/tileset";
+import { selectedTabIndexAtom } from "../state/ui";
+import { Tile } from "../state/tiles";
 
 const filtersC = [{ name: "C file", extensions: ["c"] }];
 const filtersH = [{ name: "H file", extensions: ["h"] }];

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { Belt } from "./Belt/index.tsx";
-import { BeltColorButton } from "./Belt/BeltColorButton.tsx";
-import { selectedPaintIndexAtom } from "../../state/index.ts";
+import { Belt } from "./Belt/index";
+import { BeltColorButton } from "./Belt/BeltColorButton";
 import { useSetAtom } from "jotai";
+import { selectedPaintIndexAtom } from "../../state/ui";
 
 export function ToolbarTileEditor() {
   const setPaintIndex = useSetAtom(selectedPaintIndexAtom);
