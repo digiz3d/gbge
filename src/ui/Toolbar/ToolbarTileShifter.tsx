@@ -1,8 +1,7 @@
 import { Belt } from "./Belt";
 import { BeltTileButton } from "./Belt/BeltTileButton";
 import { useSetAtom } from "jotai";
-import { clockwise } from "../../state/tiles-shifting";
-import { shiftCurrentTileAtom, Tile } from "../../state/tiles";
+import { clockwise, shiftCurrentTileAtom, Tile } from "../../state/tiles";
 
 export function ToolbarTileShifter() {
   const shift = useSetAtom(shiftCurrentTileAtom);
