@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
+import { currentSelectionAtom } from "../../state";
+import { createTileImage } from "../../utils/tileImage";
+import {
+  getMetaTilesForMapAtom,
+  setMapTileIndexesFromMetaTileAtom,
+} from "../../state/metatile";
 import {
   mapEditorCanvasAtom,
-  currentSelectionAtom,
-  setMapTileIndexesFromMetaTileAtom,
-  setMapTileIndexesAtom,
-  getMetaTilesForMapAtom,
   mapSizeAtom,
-} from "../../state";
-import { createTileImage } from "../../utils/tileImage";
+  setMapTileIndexesAtom,
+} from "../../state/map";
 
 const TILE_SIZE = 16;
 

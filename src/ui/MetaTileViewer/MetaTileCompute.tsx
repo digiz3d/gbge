@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { computeMetaTilesAtom, metaTilesAtom } from "../../state";
+import { computeMetaTilesAtom, metaTilesAtom } from "../../state/metatile";
 
 export function MetaTileCompute() {
   const metaTiles = useAtomValue(metaTilesAtom);

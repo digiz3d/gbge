@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSetAtom } from "jotai";
-import { createMapAtom, DEFAULT_MAP_SIZE } from "../../state";
 import { Modal } from "../Modals/Modal";
+import { createMapAtom, DEFAULT_MAP_SIZE } from "../../state/map";
 
 export function CreateMapModal({
   close,

@@ -1,9 +1,7 @@
 import { useAtomValue } from "jotai";
-import {
-  currentSelectionAtom,
-  isVisibleMapGridAtom,
-  mapSizeAtom,
-} from "../../state";
+import { currentSelectionAtom } from "../../state";
+import { mapSizeAtom } from "../../state/map";
+import { isVisibleMapGridAtom } from "../../state/ui";
 
 const TILE_SIZE = 16;
 const METATILE_SIZE = TILE_SIZE * 2;

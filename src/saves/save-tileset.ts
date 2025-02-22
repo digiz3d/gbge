@@ -1,7 +1,8 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { TileSet, tileSetsAtom } from "../state";
+import { TileSet } from "../state";
 import { atom } from "jotai";
+import { tileSetsAtom } from "../state/tileset";
 
 const filters = [{ name: "GBGE TileSet", extensions: ["gbge-tilesets"] }];
 

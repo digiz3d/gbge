@@ -1,12 +1,4 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  deleteMapByIndexAtom,
-  hoveredMetaTileIndexAtom,
-  mapsAtom,
-  metaTilesAtom,
-  moveMapInWorldAtom,
-  tileSetsAtom,
-} from "../../state";
 import { useEffect, useRef, useState } from "react";
 import { focusToEditMapAtom } from "../../state/ui";
 import { WorldMapInfo } from "./WorldMapInfo";
@@ -14,6 +6,13 @@ import { WorldMapInfo } from "./WorldMapInfo";
 import { Stage, Layer, Rect } from "react-konva";
 import { MapPreview } from "./MapPreview";
 import { WorldMapOrigin } from "./WorldMapOrigin";
+import { hoveredMetaTileIndexAtom, metaTilesAtom } from "../../state/metatile";
+import {
+  deleteMapByIndexAtom,
+  mapsAtom,
+  moveMapInWorldAtom,
+} from "../../state/map";
+import { tileSetsAtom } from "../../state/tileset";
 
 const LEFT_CLICK = 0;
 const MIDDLE_CLICK = 1;

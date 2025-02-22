@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { isVisibleMapOverlayAtom } from "../../state";
+import { isVisibleMapOverlayAtom } from "../../state/ui";
 
 export function MapVisibleOverlay() {
   const isVisible = useAtomValue(isVisibleMapOverlayAtom);

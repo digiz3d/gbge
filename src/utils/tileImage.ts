@@ -1,6 +1,7 @@
 import { LRUCache } from "lru-cache";
 
-import { Color, MapEntity, pixelToRgb, Tile, TileSet } from "../state";
+import { Color, pixelToRgb, Tile, TileSet } from "../state";
+import { MapEntity } from "../state/map";
 
 const tileCache = new LRUCache<string, string>({
   max: 1024,

@@ -1,10 +1,6 @@
 import { atom } from "jotai";
-import {
-  currentSelectionAtom,
-  selectedTabIndexAtom,
-  Tile,
-  tileSetsAtom,
-} from ".";
+import { currentSelectionAtom, selectedTabIndexAtom, Tile } from ".";
+import { tileSetsAtom } from "./tileset";
 
 export const copiedTileAtom = atom<Tile | null>(null);
 

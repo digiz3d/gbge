@@ -1,16 +1,12 @@
 import { useAtom, useAtomValue } from "jotai";
-import {
-  currentSelectionAtom,
-  selectedTabIndexAtom,
-  Tile,
-  tileSetsAtom,
-} from "../state";
+import { currentSelectionAtom, selectedTabIndexAtom, Tile } from "../state";
 import { TileViewerButSmall } from "./TileViewerButSmall";
 import { focusAtom } from "jotai-optics";
 import { splitAtom } from "jotai/utils";
 import { useMemo } from "react";
 import { WritableAtom } from "jotai";
 import { SetStateAction } from "jotai";
+import { tileSetsAtom } from "../state/tileset";
 
 export function TileSetViewer() {
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
@@ -37,7 +33,8 @@ export function TileSetViewer() {
           <div
             key={`${tileAtom}`}
             className={`cursor-pointer ring filter ${
-              currentSelection.mode === "tile" && currentSelection.index === index
+              currentSelection.mode === "tile" &&
+              currentSelection.index === index
                 ? "contrast-150"
                 : "contrast-100 hover:contrast-125" // scaling issue when not applying this filter on other cells
             }`}

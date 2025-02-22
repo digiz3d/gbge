@@ -13,3 +13,9 @@ export function atomWithToggle(initialValue: boolean) {
 
   return anAtom;
 }
+
+export function makeFilledArray<T>(length: number, value: T | (() => T)): T[] {
+  return Array(length)
+    .fill(null)
+    .map(() => (typeof value === "function" ? (value as () => T)() : value));
+}

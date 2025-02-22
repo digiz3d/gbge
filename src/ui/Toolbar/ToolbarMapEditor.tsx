@@ -1,13 +1,12 @@
 import { Belt } from "./Belt/index.tsx";
+import { pixelToRgb, Tile } from "../../state/index.ts";
+import { useAtom } from "jotai";
+import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
 import {
   areMapIdsVisibleAtom,
   isVisibleMapGridAtom,
   isVisibleMapOverlayAtom,
-  pixelToRgb,
-  Tile,
-} from "../../state/index.ts";
-import { useAtom } from "jotai";
-import { BeltTileButton } from "./Belt/BeltTileButton.tsx";
+} from "../../state/ui.ts";
 
 export function ToolbarMapEditor() {
   const [isGridVisible, toggleGrid] = useAtom(isVisibleMapGridAtom);
