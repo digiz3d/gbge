@@ -1,168 +1,210 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
-  MapEntity,
+  deleteMapByIndexAtom,
   mapsAtom,
   moveMapInWorldAtom,
   tileSetsAtom,
 } from "../../state";
 import { useEffect, useRef, useState } from "react";
-import { createMapImage } from "../../utils/tileImage";
 import { focusToEditMapAtom } from "../../state/ui";
 import { WorldMapInfo } from "./WorldMapInfo";
+
+import { Stage, Layer, Rect } from "react-konva";
+import { MapPreview } from "./MapPreview";
 
 const LEFT_CLICK = 0;
 const MIDDLE_CLICK = 1;
 const RIGHT_CLICK = 2;
 
-const TILE_SIZE = 8;
-
-function getMapsMinTop(maps: MapEntity[]) {
-  return Math.min(...maps.map((map) => map.worldCoords.y));
-}
-function getMapsMaxBottom(maps: MapEntity[]) {
-  return Math.max(...maps.map((map) => map.worldCoords.y + map.size.height));
-}
-
-function getMapsMinLeft(maps: MapEntity[]) {
-  return Math.min(...maps.map((map) => map.worldCoords.x));
-}
-function getMapsMaxRight(maps: MapEntity[]) {
-  return Math.max(...maps.map((map) => map.worldCoords.x + map.size.width));
-}
+const currentPanningAtom = atom({ x: 0, y: 0 });
+const currentZoomAtom = atom(8);
 
 export function Worldmap() {
-  const [scale, setScale] = useState(100);
+  const [currentPanning, setCurrentPanning] = useAtom(currentPanningAtom);
+  const [zoom, setZoom] = useAtom(currentZoomAtom);
+
+  const deleteMap = useSetAtom(deleteMapByIndexAtom);
+  const [hoverMapIndex, setHoverMapIndex] = useState<number | null>(null);
   const [tileSet] = useAtomValue(tileSetsAtom);
   const containerRef = useRef<HTMLDivElement>(null);
   const [panning, setPanning] = useState(false);
   const [grabbing, setGrabbing] = useState<{
     mapIndex: number;
-    initialX: number;
-    initialY: number;
-    x: number;
-    y: number;
+    mapX: number;
+    mapY: number;
+    mouseX: number;
+    mouseY: number;
+    width: number;
+    height: number;
   } | null>(null);
   const focusToEditMap = useSetAtom(focusToEditMapAtom);
   const moveMapInWorld = useSetAtom(moveMapInWorldAtom);
 
   const maps = useAtomValue(mapsAtom);
 
-  const [maxTop, setMaxTop] = useState(getMapsMinTop(maps));
-  const [maxBottom, setMaxBottom] = useState(getMapsMaxBottom(maps));
-  const [maxLeft, setMaxLeft] = useState(getMapsMinLeft(maps));
-  const [maxRight, setMaxRight] = useState(getMapsMaxRight(maps));
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const handleMouseUp = () => {
       setPanning(false);
+      if (grabbing) {
+        moveMapInWorld(
+          grabbing.mapIndex,
+          (grabbing.mapX - currentPanning.x) / zoom,
+          (grabbing.mapY - currentPanning.y) / zoom
+        );
+      }
       setGrabbing(null);
-      setMaxTop(getMapsMinTop(maps));
-      setMaxBottom(getMapsMaxBottom(maps));
-      setMaxLeft(getMapsMinLeft(maps));
-      setMaxRight(getMapsMaxRight(maps));
     };
 
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [maps, panning]);
+  }, [grabbing, maps]);
+
+  useEffect(() => {
+    if (hoverMapIndex === null) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        deleteMap(hoverMapIndex);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [hoverMapIndex]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    setCanvasSize({ width, height });
+  }, [containerRef.current]);
 
   return (
     <div className="flex flex-col flex-1">
       <WorldMapInfo />
       <div
-        ref={containerRef}
         className="flex-1 overflow-hidden relative border-1"
-        onWheel={(e) => {
-          e.stopPropagation();
-          if (!containerRef.current) {
-            return;
-          }
-
-          setScale((currentSize) => {
-            return Math.max(
-              10,
-              Math.min(160, currentSize + (e.deltaY > 0 ? -10 : 10))
-            );
-          });
-        }}
+        ref={containerRef}
       >
-        <div
-          className="absolute top-0 left-0 transition-all duration-75"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
-              '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" fill="#fff"/><rect x="10" y="0" width="10" height="10" fill="#eee"/><rect x="0" y="10" width="10" height="10" fill="#eee"/><rect x="10" y="10" width="10" height="10" fill="#fff"/></svg>'
-            )}")`,
-            backgroundSize: "20px 20px",
-            height: TILE_SIZE * (maxTop + maxBottom),
-            width: TILE_SIZE * (maxLeft + maxRight),
-            scale: scale / 100,
-            cursor: panning ? "move" : "grab",
+        <Stage
+          width={canvasSize.width}
+          height={canvasSize.height}
+          className="absolute top-0 left-0"
+          onWheel={(e) => {
+            e.evt.preventDefault();
+            e.evt.stopPropagation();
+            if (grabbing) return;
+            setZoom((x) => {
+              const isNegative = e.evt.deltaY < 0;
+              if (isNegative) {
+                return Math.min(x + 1, 16);
+              }
+              return Math.max(x - 1, 1);
+            });
           }}
           onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.button == MIDDLE_CLICK) {
+            if (e.evt.button == MIDDLE_CLICK) {
+              e.evt.preventDefault();
+              e.evt.stopPropagation();
               setPanning(true);
             }
           }}
           onMouseMove={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            e.evt.preventDefault();
+            e.evt.stopPropagation();
 
             if (!containerRef.current) {
               return;
             }
             if (panning) {
-              containerRef.current.scrollBy({
-                left: -e.movementX,
-                top: -e.movementY,
-              });
+              setCurrentPanning((curr) => ({
+                x: curr.x + e.evt.movementX,
+                y: curr.y + e.evt.movementY,
+              }));
               return;
             }
             if (grabbing !== null) {
-              moveMapInWorld(
-                grabbing.mapIndex,
-                grabbing.initialX +
-                  (e.clientX - grabbing.x) / ((TILE_SIZE * scale) / 100),
-                grabbing.initialY +
-                  (e.clientY - grabbing.y) / ((TILE_SIZE * scale) / 100)
-              );
+              setGrabbing({
+                ...grabbing,
+                mapX:
+                  e.evt.clientX -
+                  grabbing.mouseX +
+                  maps[grabbing.mapIndex].worldCoords.x * zoom +
+                  currentPanning.x * 2,
+                mapY:
+                  e.evt.clientY -
+                  grabbing.mouseY +
+                  maps[grabbing.mapIndex].worldCoords.y * zoom +
+                  currentPanning.y * 2,
+              });
             }
           }}
         >
-          {maps.map((map, index) => (
-            <div
-              onMouseDown={(e) => {
-                e.preventDefault();
+          <Layer imageSmoothingEnabled={zoom <= 8 ? true : false}>
+            {maps.map((map, index) => {
+              return (
+                <MapPreview
+                  key={map.id}
+                  map={map}
+                  tileSet={tileSet}
+                  height={zoom * map.size.height}
+                  width={zoom * map.size.width}
+                  x={currentPanning.x + zoom * map.worldCoords.x}
+                  y={currentPanning.y + zoom * map.worldCoords.y}
+                  onMouseDown={(e) => {
+                    e.evt.preventDefault();
 
-                if (e.button == LEFT_CLICK) {
-                  setGrabbing({
-                    mapIndex: index,
-                    initialX: maps[index].worldCoords.x,
-                    initialY: maps[index].worldCoords.y,
-                    x: e.clientX,
-                    y: e.clientY,
-                  });
-                }
-                if (e.button == RIGHT_CLICK) {
-                  focusToEditMap(index);
-                }
-              }}
-              key={map.id}
-              className="absolute bg-amber-50 outline-1 outline-offset-[-1px] outline-solid "
-              style={{
-                cursor: grabbing ? "grabbing" : panning ? "move" : "grab",
-                height: TILE_SIZE * map.size.height,
-                left: TILE_SIZE * map.worldCoords.x,
-                top: TILE_SIZE * map.worldCoords.y,
-              }}
-            >
-              <img src={createMapImage(TILE_SIZE, map, tileSet)} />
-            </div>
-          ))}
-        </div>
+                    const mouseX = e.evt.clientX + currentPanning.x;
+                    const mouseY = e.evt.clientY + currentPanning.y;
+
+                    if (e.evt.button == LEFT_CLICK) {
+                      setGrabbing({
+                        mapIndex: index,
+                        mapX:
+                          currentPanning.x + maps[index].worldCoords.x * zoom,
+                        mapY:
+                          currentPanning.y + maps[index].worldCoords.y * zoom,
+                        mouseX,
+                        mouseY,
+                        width: zoom * maps[index].size.width,
+                        height: zoom * maps[index].size.height,
+                      });
+                    }
+
+                    if (e.evt.button == RIGHT_CLICK) {
+                      focusToEditMap(index);
+                    }
+                  }}
+                  onMouseEnter={() => {
+                    if (grabbing) return;
+                    setHoverMapIndex(index);
+                  }}
+                  onMouseLeave={() => {
+                    if (grabbing) return;
+                    setHoverMapIndex(null);
+                  }}
+                />
+              );
+            })}
+            {grabbing && (
+              <>
+                <Rect
+                  x={grabbing.mapX}
+                  y={grabbing.mapY}
+                  width={grabbing.width}
+                  height={grabbing.height}
+                  fill="rgba(0,0,255,0.2)"
+                />
+              </>
+            )}
+          </Layer>
+        </Stage>
       </div>
     </div>
   );

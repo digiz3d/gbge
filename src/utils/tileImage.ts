@@ -1,17 +1,21 @@
+import { LRUCache } from "lru-cache";
+
 import { Color, MapEntity, pixelToRgb, Tile, TileSet } from "../state";
 
-const MAX_CACHE_SIZE = 32 * 32;
+const tileCache = new LRUCache<string, string>({
+  max: 1024,
+});
 
-const tileCache = new Map<string, string>();
+const mapCache = new LRUCache<string, string>({
+  max: 128,
+});
+
+const TILE_PIXEL_SIZE = 8;
 
 export function createTileImage(tile: Tile): string {
   const cacheKey = tile.join(",");
   const cached = tileCache.get(cacheKey);
   if (cached) return cached;
-
-  if (tileCache.size > MAX_CACHE_SIZE) {
-    tileCache.clear();
-  }
 
   const canvas = document.createElement("canvas");
   canvas.width = 8;
@@ -31,39 +35,53 @@ export function createTileImage(tile: Tile): string {
   return dataUrl;
 }
 
-export function createMapImage(
-  tileSize: number,
-  map: MapEntity,
-  tileSet: TileSet
-): string {
+export function createMapImage(map: MapEntity, tileSet: TileSet): string {
+  const cacheKey = `${tileSet.name}-${JSON.stringify(map.tilesIndexes)}`;
+  const cached = mapCache.get(cacheKey);
+  if (cached) return cached;
+
   const canvas = document.createElement("canvas");
-  canvas.width = map.size.width * tileSize;
-  canvas.height = map.size.height * tileSize;
+  canvas.width = map.size.width * TILE_PIXEL_SIZE;
+  canvas.height = map.size.height * TILE_PIXEL_SIZE;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return "";
 
   map.tilesIndexes.forEach((tileIndex, i) => {
     const tile = tileSet.tiles[tileIndex];
-    const x = (i % map.size.width) * tileSize;
-    const y = Math.floor(i / map.size.width) * tileSize;
-    drawTile(ctx, tile, tileSize, x, y);
+    const x = (i % map.size.width) * TILE_PIXEL_SIZE;
+    const y = Math.floor(i / map.size.width) * TILE_PIXEL_SIZE;
+    drawTile(ctx, tile, x, y);
   });
 
+  ctx.beginPath();
+  ctx.strokeStyle = "white";
+  ctx.moveTo(0, 0);
+  ctx.lineTo(canvas.width, 0);
+  ctx.lineTo(canvas.width, canvas.height);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.moveTo(canvas.width, canvas.height);
+  ctx.lineTo(0, canvas.height);
+  ctx.lineTo(0, 0);
+  ctx.stroke();
+
   const dataUrl = canvas.toDataURL();
+  mapCache.set(cacheKey, dataUrl);
   return dataUrl;
 }
 
 function drawTile(
   ctx: CanvasRenderingContext2D,
   tile: Tile,
-  tileSize: number,
   tileOffsetX: number,
   tileOffsetY: number
 ) {
   tile.forEach((pixel, index) => {
-    const x = (index % 8) + tileOffsetX;
-    const y = Math.floor(index / 8) + tileOffsetY;
-    drawPixel(ctx, pixel, x, y, tileSize, tileSize);
+    const x = (index % TILE_PIXEL_SIZE) + tileOffsetX;
+    const y = Math.floor(index / TILE_PIXEL_SIZE) + tileOffsetY;
+    drawPixel(ctx, pixel, x, y);
   });
 }
 
@@ -71,10 +89,8 @@ function drawPixel(
   ctx: CanvasRenderingContext2D,
   pixel: Color,
   x: number,
-  y: number,
-  w: number,
-  h: number
+  y: number
 ) {
   ctx.fillStyle = pixelToRgb[pixel];
-  ctx.fillRect(x, y, w, h);
+  ctx.fillRect(x, y, 1, 1);
 }
