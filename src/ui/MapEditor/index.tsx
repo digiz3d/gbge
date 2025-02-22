@@ -68,8 +68,9 @@ export function MapEditor() {
         })}
       {currentSelection.mode === "metaTile" &&
         metaTiles.map((metaTile, index) => {
-          const metaTileX = index % (MAP_TILES / 2);
-          const metaTileY = Math.floor(index / (MAP_TILES / 2));
+          const halfMapTiles = MAP_TILES / 2;
+          const metaTileX = index % halfMapTiles;
+          const metaTileY = Math.floor(index / halfMapTiles);
 
           return (
             <div

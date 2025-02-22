@@ -24,7 +24,7 @@ export const loadMapsAtom = atom(null, async (_, set) => {
   const mapsJson = await readTextFile(loadPath);
   const maps = JSON.parse(mapsJson) as MapEntity[];
   if (maps.length === 0) return;
-  set(currentMapIndexAtom, 0);
+  set(currentMapIndexAtom, null);
   set(mapsAtom, maps);
   set(computeMetaTilesAtom);
 });

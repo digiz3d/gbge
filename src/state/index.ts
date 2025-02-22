@@ -3,6 +3,7 @@ import { focusAtom } from "jotai-optics";
 
 import * as shifting from "./shifting";
 import { resizeColumns, resizeRows } from "./map";
+import { atomWithToggle } from "./utils";
 
 const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 155, g: 188, b: 15 },
@@ -183,6 +184,9 @@ export const metaTilesAtom = atom<
     spottedCount: number;
   }[]
 >([]);
+export const hoveredMetaTileIndexAtom = atom<number | null>(null);
+export const highlightMetaTilesAtom = atom<number[]>([]);
+
 export type MetaTile = ExtractAtomValue<typeof metaTilesAtom>[number];
 
 // UI settings
@@ -192,9 +196,9 @@ export const currentSelectionAtom = atom<{
 }>({ mode: "tile", index: 0 });
 export const selectedTabIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
-export const isVisibleMapGridAtom = atom(true);
-export const isVisibleMapOverlayAtom = atom(true);
-export const highlightMetaTilesAtom = atom<number[]>([]);
+export const isVisibleMapGridAtom = atomWithToggle(true);
+export const isVisibleMapOverlayAtom = atomWithToggle(true);
+export const areMapIdsVisibleAtom = atomWithToggle(true);
 
 const initialTileSets: TileSet[] = [
   {
@@ -286,7 +290,6 @@ export const shiftCurrentTileAtom = atom(
 );
 
 export const computeMetaTilesAtom = atom(null, async (get, set) => {
-  const { width: MAP_WIDTH } = get(mapSizeAtom);
   const maps = get(mapsAtom);
   const metaTiles: MetaTile[] = [];
   const metaTileCache = new Map<string, MetaTile>();
@@ -294,11 +297,12 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
   for (let mapIndex = 0; mapIndex < maps.length; mapIndex++) {
     const map = maps[mapIndex];
     const mapTileIndexes = map.tilesIndexes;
+    const mapWidth = map.size.width;
 
     for (let i = 0; i < mapTileIndexes.length; i += 2) {
-      const isEndOfRow = i != 0 && i % MAP_WIDTH === 0;
+      const isEndOfRow = i != 0 && i % mapWidth === 0;
       if (isEndOfRow) {
-        i += MAP_WIDTH; // skip the next row
+        i += mapWidth; // skip the next row
         const isEndOfMap = i >= mapTileIndexes.length;
         if (isEndOfMap) {
           break;
@@ -307,8 +311,8 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
 
       const index1 = mapTileIndexes[i];
       const index2 = mapTileIndexes[i + 1];
-      const index3 = mapTileIndexes[i + MAP_WIDTH];
-      const index4 = mapTileIndexes[i + 1 + MAP_WIDTH];
+      const index3 = mapTileIndexes[i + mapWidth];
+      const index4 = mapTileIndexes[i + 1 + mapWidth];
 
       const key = `${index1}-${index2}-${index3}-${index4}`;
       if (metaTileCache.has(key)) {
