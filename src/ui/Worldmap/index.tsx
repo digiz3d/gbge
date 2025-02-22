@@ -188,14 +188,6 @@ export function Worldmap() {
             {maps.map((map, index) => {
               const isHighlighted = metaTileSpottedInMap?.has(index) ?? false;
 
-              if (index === 0) {
-                console.log(
-                  "spottedAt?.get(index)",
-                  index,
-                  metaTileSpottedInMap
-                );
-              }
-
               return (
                 <MapPreview
                   key={map.id}
