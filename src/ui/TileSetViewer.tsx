@@ -42,7 +42,9 @@ export function TileSetViewer() {
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
-            onClick={() => setCurrentSelection({ mode: "tile", index })}
+            onClick={() =>
+              setCurrentSelection({ mode: "tile", index, trigger: "manual" })
+            }
           >
             <TileViewerButSmall tileAtom={tileAtom} />
           </div>

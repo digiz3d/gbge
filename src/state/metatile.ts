@@ -8,7 +8,6 @@ import { currentTileSetTilesAtom } from "./tileset";
 
 export const metaTilesAtom = atom<
   {
-    key: string; // hash of the metatiles -> tile -> pixels
     tileIndexes: [number, number, number, number];
     spottedAt: Map<number, number[]>;
     spottedCount: number;
@@ -63,7 +62,6 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
 
 export const computeMetaTilesAtom = atom(null, async (get, set) => {
   const maps = get(mapsAtom);
-  const globalTiles = get(currentTileSetTilesAtom);
   const metaTiles: MetaTile[] = [];
   const metaTileCache = new Map<string, MetaTile>();
 
@@ -87,12 +85,7 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
       const t3 = mapTileIndexes[i + mapWidth];
       const t4 = mapTileIndexes[i + 1 + mapWidth];
 
-      const key = makeMetaTileSignature([
-        globalTiles[t1],
-        globalTiles[t2],
-        globalTiles[t3],
-        globalTiles[t4],
-      ]);
+      const key = makeMetaTileSignature([t1, t2, t3, t4]);
 
       if (metaTileCache.has(key)) {
         const metaTile = metaTileCache.get(key)!;
@@ -105,7 +98,6 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
         continue;
       }
       const metaTile: MetaTile = {
-        key,
         spottedAt: new Map([[mapIndex, [i]]]),
         spottedCount: 1,
         tileIndexes: [t1, t2, t3, t4],
@@ -123,7 +115,7 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
   );
 });
 
-type SimplerMetaTile = Pick<MetaTile, "key" | "tileIndexes">;
+type SimplerMetaTile = Pick<MetaTile, "tileIndexes">;
 
 export const getMetaTilesIndexesForMapAtom = atom((get) => {
   const currentSelection = get(currentSelectionAtom);
@@ -162,21 +154,16 @@ export const getMetaTilesIndexesForMapAtom = atom((get) => {
       (tile) => makeTileSignature(tile) === makeTileSignature(t4)
     );
 
-    const key = makeMetaTileSignature([
-      globalTiles[i1],
-      globalTiles[i2],
-      globalTiles[i3],
-      globalTiles[i4],
-    ]);
-
-    metaTiles.push({ key, tileIndexes: [i1, i2, i3, i4] });
+    metaTiles.push({ tileIndexes: [i1, i2, i3, i4] });
   }
 
   return metaTiles;
 });
 
-function makeMetaTileSignature(tiles: [Tile, Tile, Tile, Tile]): string {
-  return tiles.map(makeTileSignature).join("-");
+function makeMetaTileSignature(
+  tileIndexes: [number, number, number, number]
+): string {
+  return tileIndexes.join("-");
 }
 
 function makeTileSignature(tile: Tile): string {
@@ -190,12 +177,20 @@ export const droppickMetaTileAtom = atom(
     if (currentSelection.mode !== "metaTile") return;
 
     let metaTiles = get(metaTilesAtom);
-    let index = metaTiles.findIndex((m) => m.key === metaTile.key);
+    let index = metaTiles.findIndex(
+      (m) =>
+        makeMetaTileSignature(m.tileIndexes) ===
+        makeMetaTileSignature(metaTile.tileIndexes)
+    );
     const metaTilesAreOutdated = index == -1;
     if (metaTilesAreOutdated) {
       set(computeMetaTilesAtom);
       metaTiles = get(metaTilesAtom);
-      index = metaTiles.findIndex((m) => m.key === metaTile.key);
+      index = metaTiles.findIndex(
+        (m) =>
+          makeMetaTileSignature(m.tileIndexes) ===
+          makeMetaTileSignature(metaTile.tileIndexes)
+      );
     }
     set(currentSelectionAtom, { mode: "metaTile", index, trigger: "auto" });
   }

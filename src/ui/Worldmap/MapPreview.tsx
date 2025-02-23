@@ -24,7 +24,7 @@ export function MapPreview(props: {
   const {
     map,
     tileSet,
-    highlightCount: isHighlighted,
+    highlightCount,
     x,
     y,
     width,
@@ -40,6 +40,8 @@ export function MapPreview(props: {
   const textX = x + 2;
   const textY = y + 2;
 
+  const scale = width < 64 ? 1 : 2;
+
   return (
     <>
       <Image
@@ -52,48 +54,6 @@ export function MapPreview(props: {
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       />
-      {isHighlighted !== null && (
-        <>
-          <Rect
-            x={x}
-            y={y}
-            width={width}
-            height={height}
-            fill="#4f39f6"
-            opacity={0.25}
-          />
-          <Text
-            text={isHighlighted.toString()}
-            x={x}
-            y={y}
-            fill="black"
-            scaleX={2}
-            scaleY={2}
-            width={width / 2}
-            height={height / 2}
-            strokeWidth={2}
-            align="center"
-            verticalAlign="middle"
-            stroke="black"
-            listening={false}
-          />
-          <Text
-            text={isHighlighted.toString()}
-            x={x}
-            y={y}
-            fill="white"
-            scaleX={2}
-            scaleY={2}
-            width={width / 2}
-            height={height / 2}
-            strokeWidth={1}
-            align="center"
-            verticalAlign="middle"
-            stroke="white"
-            listening={false}
-          />
-        </>
-      )}
       {areMapIdsVisible && (
         <>
           <Text
@@ -112,6 +72,48 @@ export function MapPreview(props: {
             strokeWidth={1}
             stroke="white"
             fill="white"
+            listening={false}
+          />
+        </>
+      )}
+      {highlightCount !== null && (
+        <>
+          <Rect
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            fill="#4f39f6"
+            opacity={0.25}
+          />
+          <Text
+            text={highlightCount.toString()}
+            x={x}
+            y={y}
+            fill="black"
+            scaleX={scale}
+            scaleY={scale}
+            width={width / scale}
+            height={height / scale}
+            strokeWidth={2}
+            align="center"
+            verticalAlign="middle"
+            stroke="black"
+            listening={false}
+          />
+          <Text
+            text={highlightCount.toString()}
+            x={x}
+            y={y}
+            fill="white"
+            scaleX={scale}
+            scaleY={scale}
+            width={width / scale}
+            height={height / scale}
+            strokeWidth={1}
+            align="center"
+            verticalAlign="middle"
+            stroke="white"
             listening={false}
           />
         </>
