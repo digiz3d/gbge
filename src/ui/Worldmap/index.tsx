@@ -13,10 +13,7 @@ import {
   moveMapInWorldAtom,
 } from "../../state/map";
 import { tileSetsAtom } from "../../state/tileset";
-
-const LEFT_CLICK = 0;
-const MIDDLE_CLICK = 1;
-const RIGHT_CLICK = 2;
+import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../../state/utils";
 
 const currentPanningAtom = atom({ x: 0, y: 0 });
 const currentZoomAtom = atom(8);

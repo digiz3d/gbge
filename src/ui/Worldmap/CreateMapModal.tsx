@@ -54,8 +54,9 @@ export function CreateMapModal({
         </div>
         <button
           className="bg-indigo-600 text-white p-2 cursor-pointer active:bg-indigo-700 disabled:bg-white disabled:text-gray-400 transition-all"
-          onClick={() => {
-            createMap(id, width, height);
+          onClick={async () => {
+            const created = await createMap(id, width, height);
+            if (!created) return;
             close();
           }}
           disabled={

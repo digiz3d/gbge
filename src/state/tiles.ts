@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { focusAtom } from "jotai-optics";
 import { currentSelectionAtom, selectedTabIndexAtom } from "./ui";
-import { tileSetsAtom } from "./tileset";
+import { currentTileSetTilesAtom, tileSetsAtom } from "./tileset";
 
 const colorPalette: { r: number; g: number; b: number }[] = [
   { r: 155, g: 188, b: 15 },
@@ -150,3 +150,13 @@ export function clockwise(tile: Tile) {
 
   return result;
 }
+
+export const droppickTileAtom = atom(null, (get, set, tile: Tile) => {
+  const currentSelection = get(currentSelectionAtom);
+  if (currentSelection.mode !== "tile") return;
+
+  const tiles = get(currentTileSetTilesAtom);
+  const index = tiles.findIndex((t) => t === tile);
+
+  set(currentSelectionAtom, { mode: "tile", index });
+});

@@ -2,26 +2,33 @@ import { useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { createTileImage } from "../../utils/tileImage";
 import {
-  getMetaTilesForMapAtom,
+  droppickMetaTileAtom,
+  getMetaTilesIndexesForMapAtom,
   setMapTileIndexesFromMetaTileAtom,
 } from "../../state/metatile";
 import {
-  mapEditorCanvasAtom,
   mapSizeAtom,
+  mapTilesAtom,
   setMapTileIndexesAtom,
 } from "../../state/map";
 import { currentSelectionAtom } from "../../state/ui";
-
-const TILE_SIZE = 16;
+import { TILE_SIZE } from "./constants";
+import { LEFT_CLICK, RIGHT_CLICK } from "../../state/utils";
+import { currentTileSetTilesAtom } from "../../state/tileset";
+import { droppickTileAtom } from "../../state/tiles";
 
 export function MapEditor() {
-  const tiles = useAtomValue(mapEditorCanvasAtom);
+  const globalTiles = useAtomValue(currentTileSetTilesAtom);
+  const mapTiles = useAtomValue(mapTilesAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
   const [isDrawing, setIsDrawing] = useState(false);
   const updateTileOnMap = useSetAtom(setMapTileIndexesAtom);
   const updateMetaTileOnMap = useSetAtom(setMapTileIndexesFromMetaTileAtom);
-  const metaTiles = useAtomValue(getMetaTilesForMapAtom);
+  const metaTiles = useAtomValue(getMetaTilesIndexesForMapAtom);
   const { width: MAP_TILES } = useAtomValue(mapSizeAtom);
+  const droppickMetaTile = useSetAtom(droppickMetaTileAtom);
+  const droppickTile = useSetAtom(droppickTileAtom);
+
   useEffect(() => {
     const handleMouseUp = () => {
       if (!isDrawing) return;
@@ -39,13 +46,9 @@ export function MapEditor() {
           currentSelection.mode === "tile" ? MAP_TILES : MAP_TILES / 2
         }, ${currentSelection.mode === "tile" ? TILE_SIZE : TILE_SIZE * 2}px)`,
       }}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        setIsDrawing(true);
-      }}
     >
       {currentSelection.mode === "tile" &&
-        tiles.map((tile, index) => {
+        mapTiles.map((tile, index) => {
           const tileX = index % MAP_TILES;
           const tileY = Math.floor(index / MAP_TILES);
 
@@ -57,7 +60,18 @@ export function MapEditor() {
               width={TILE_SIZE}
               height={TILE_SIZE}
               style={{ imageRendering: "pixelated" }}
-              onMouseDown={() => updateTileOnMap(tileX, tileY)}
+              onMouseDown={(e) => {
+                if (e.button === LEFT_CLICK) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDrawing(true);
+                  updateTileOnMap(tileX, tileY);
+                } else if (e.button === RIGHT_CLICK) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  droppickTile(tile);
+                }
+              }}
               onMouseOver={(e) => {
                 if (isDrawing) {
                   e.preventDefault();
@@ -82,7 +96,21 @@ export function MapEditor() {
                 width: TILE_SIZE * 2,
                 height: TILE_SIZE * 2,
               }}
-              onMouseDown={() => updateMetaTileOnMap(metaTileX, metaTileY)}
+              onMouseDown={(e) => {
+                if (e.button === LEFT_CLICK) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  updateMetaTileOnMap(metaTileX, metaTileY);
+                  setIsDrawing(true);
+                } else if (e.button === RIGHT_CLICK) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (currentSelection.mode === "metaTile") {
+                    droppickMetaTile(metaTile);
+                  } else if (currentSelection.mode === "tile") {
+                  }
+                }
+              }}
               onMouseOver={(e) => {
                 if (isDrawing) {
                   e.preventDefault();
@@ -90,10 +118,10 @@ export function MapEditor() {
                 }
               }}
             >
-              {metaTile.map((tile, j) => (
+              {metaTile.tileIndexes.map((tile, j) => (
                 <img
                   key={j}
-                  src={createTileImage(tile)}
+                  src={createTileImage(globalTiles[tile])}
                   width={TILE_SIZE}
                   height={TILE_SIZE}
                   style={{ imageRendering: "pixelated" }}
