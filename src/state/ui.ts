@@ -4,9 +4,10 @@ import { Color } from "./tiles";
 
 export const currentMapIndexAtom = atom<number | null>(null);
 export const currentSelectionAtom = atom<{
+  trigger: "auto" | "manual";
   mode: "tile" | "metaTile";
   index: number;
-}>({ mode: "tile", index: 0 });
+}>({ mode: "tile", index: 0, trigger: "manual" });
 export const selectedTabIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
 

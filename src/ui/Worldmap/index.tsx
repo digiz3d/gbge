@@ -182,14 +182,15 @@ export function Worldmap() {
           >
             <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
-              const isHighlighted = metaTileSpottedInMap?.has(index) ?? false;
+              const highlightCount =
+                metaTileSpottedInMap?.get(index)?.length ?? null;
 
               return (
                 <MapPreview
                   key={map.id}
                   map={map}
                   tileSet={tileSet}
-                  isHighlighted={isHighlighted}
+                  highlightCount={highlightCount}
                   height={zoom * map.size.height}
                   width={zoom * map.size.width}
                   x={currentPanning.x + zoom * map.worldCoords.x}

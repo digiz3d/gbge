@@ -189,13 +189,14 @@ export const droppickMetaTileAtom = atom(
     const currentSelection = get(currentSelectionAtom);
     if (currentSelection.mode !== "metaTile") return;
 
-    const metaTiles = get(metaTilesAtom);
+    let metaTiles = get(metaTilesAtom);
     let index = metaTiles.findIndex((m) => m.key === metaTile.key);
     const metaTilesAreOutdated = index == -1;
     if (metaTilesAreOutdated) {
       set(computeMetaTilesAtom);
+      metaTiles = get(metaTilesAtom);
       index = metaTiles.findIndex((m) => m.key === metaTile.key);
     }
-    set(currentSelectionAtom, { mode: "metaTile", index });
+    set(currentSelectionAtom, { mode: "metaTile", index, trigger: "auto" });
   }
 );

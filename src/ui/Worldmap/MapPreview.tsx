@@ -11,7 +11,7 @@ import { TileSet } from "../../state/tiles";
 export function MapPreview(props: {
   map: MapEntity;
   tileSet: TileSet;
-  isHighlighted: boolean;
+  highlightCount: number | null;
   x: number;
   y: number;
   width: number;
@@ -24,7 +24,7 @@ export function MapPreview(props: {
   const {
     map,
     tileSet,
-    isHighlighted,
+    highlightCount: isHighlighted,
     x,
     y,
     width,
@@ -52,15 +52,47 @@ export function MapPreview(props: {
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       />
-      {isHighlighted && (
-        <Rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          fill="#4f39f6"
-          opacity={0.25}
-        />
+      {isHighlighted !== null && (
+        <>
+          <Rect
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            fill="#4f39f6"
+            opacity={0.25}
+          />
+          <Text
+            text={isHighlighted.toString()}
+            x={x}
+            y={y}
+            fill="black"
+            scaleX={2}
+            scaleY={2}
+            width={width / 2}
+            height={height / 2}
+            strokeWidth={2}
+            align="center"
+            verticalAlign="middle"
+            stroke="black"
+            listening={false}
+          />
+          <Text
+            text={isHighlighted.toString()}
+            x={x}
+            y={y}
+            fill="white"
+            scaleX={2}
+            scaleY={2}
+            width={width / 2}
+            height={height / 2}
+            strokeWidth={1}
+            align="center"
+            verticalAlign="middle"
+            stroke="white"
+            listening={false}
+          />
+        </>
       )}
       {areMapIdsVisible && (
         <>
@@ -70,6 +102,7 @@ export function MapPreview(props: {
             y={textY}
             strokeWidth={2}
             stroke="black"
+            fill="black"
             listening={false}
           />
           <Text
@@ -78,6 +111,7 @@ export function MapPreview(props: {
             y={textY}
             strokeWidth={1}
             stroke="white"
+            fill="white"
             listening={false}
           />
         </>
