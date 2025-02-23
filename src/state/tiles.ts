@@ -158,5 +158,5 @@ export const droppickTileAtom = atom(null, (get, set, tile: Tile) => {
   const tiles = get(currentTileSetTilesAtom);
   const index = tiles.findIndex((t) => t === tile);
 
-  set(currentSelectionAtom, { mode: "tile", index });
+  set(currentSelectionAtom, { mode: "tile", index, trigger: "auto" });
 });
