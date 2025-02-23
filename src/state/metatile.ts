@@ -1,10 +1,11 @@
-import { atom, ExtractAtomValue } from "jotai";
+import { atom, ExtractAtomValue, Getter, Setter } from "jotai";
 
 import { focusAtom } from "jotai-optics";
 import { mapsAtom, mapSizeAtom, mapTilesAtom } from "./map";
 import { currentMapIndexAtom, currentSelectionAtom } from "./ui";
 import { Tile } from "./tiles";
 import { currentTileSetTilesAtom } from "./tileset";
+import { pinnedMetaTileIndexesAtom } from "./metatiles-pinned";
 
 export const metaTilesAtom = atom<
   {
@@ -107,13 +108,33 @@ export const computeMetaTilesAtom = atom(null, async (get, set) => {
     }
   }
 
-  set(
-    metaTilesAtom,
-    metaTiles.sort((a, b) =>
-      a.tileIndexes.join("-").localeCompare(b.tileIndexes.join("-"))
-    )
+  const sortedMetaTiles = metaTiles.sort((a, b) =>
+    a.tileIndexes.join("-").localeCompare(b.tileIndexes.join("-"))
   );
+  updatePinnedMetaTileIndexes(sortedMetaTiles, get, set);
+  set(metaTilesAtom, sortedMetaTiles);
 });
+
+function updatePinnedMetaTileIndexes(
+  sortedMetaTiles: MetaTile[],
+  get: Getter,
+  set: Setter
+) {
+  const currentMetaTiles = get(metaTilesAtom);
+  const pinnedMetaTileIndexes = get(pinnedMetaTileIndexesAtom);
+  const pinnedMetaTilesSignatures = pinnedMetaTileIndexes.map((i) =>
+    makeMetaTileSignature(currentMetaTiles[i].tileIndexes)
+  );
+
+  const newPinnedMetaTilesIndexes = pinnedMetaTilesSignatures
+    .map((signature) =>
+      sortedMetaTiles.findIndex(
+        (m) => makeMetaTileSignature(m.tileIndexes) === signature
+      )
+    )
+    .filter((i) => i !== -1);
+  set(pinnedMetaTileIndexesAtom, newPinnedMetaTilesIndexes);
+}
 
 type SimplerMetaTile = Pick<MetaTile, "tileIndexes">;
 
@@ -160,7 +181,7 @@ export const getMetaTilesIndexesForMapAtom = atom((get) => {
   return metaTiles;
 });
 
-function makeMetaTileSignature(
+export function makeMetaTileSignature(
   tileIndexes: [number, number, number, number]
 ): string {
   return tileIndexes.join("-");
