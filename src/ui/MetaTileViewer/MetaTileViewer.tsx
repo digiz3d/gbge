@@ -65,7 +65,6 @@ export function MetaTileViewer() {
                 }`}
                 key={index}
                 onMouseDown={(e) => {
-                  console.log("clicked", e.button);
                   if (e.button === LEFT_CLICK) {
                     e.preventDefault();
                     e.stopPropagation();
