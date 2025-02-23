@@ -189,8 +189,6 @@ export const droppickMetaTileAtom = atom(
     const currentSelection = get(currentSelectionAtom);
     if (currentSelection.mode !== "metaTile") return;
 
-    console.log("metatile = ", metaTile);
-
     const metaTiles = get(metaTilesAtom);
     let index = metaTiles.findIndex((m) => m.key === metaTile.key);
     const metaTilesAreOutdated = index == -1;
