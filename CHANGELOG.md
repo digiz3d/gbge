@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.0](https://github.com/digiz3d/gbge/compare/v0.6.1...v0.7.0) (2025-02-23)
+
+
+### Features
+
+* ability to pin metatiles ([#23](https://github.com/digiz3d/gbge/issues/23)) ([dd0b8a1](https://github.com/digiz3d/gbge/commit/dd0b8a1e16e38d664911a0dfcdedd26ccc80d4f7))
+* highlight maps that contain the hovered metatile ([#18](https://github.com/digiz3d/gbge/issues/18)) ([700abd1](https://github.com/digiz3d/gbge/commit/700abd19de6be891470afbffbd8d1d48a10327dc))
+* picking metatiles or tiles work on map editor ([#21](https://github.com/digiz3d/gbge/issues/21)) ([8c56ca2](https://github.com/digiz3d/gbge/commit/8c56ca2b16c137d70f693eabea13563f4a7c430f))
+
+
+### Bug Fixes
+
+* correctly load metatiles without a loaded tileset ([#22](https://github.com/digiz3d/gbge/issues/22)) ([c67058a](https://github.com/digiz3d/gbge/commit/c67058a3488ab7542f182bf732dcdf976ab24d86))
+
 ## [0.6.1](https://github.com/digiz3d/gbge/compare/v0.6.0...v0.6.1) (2025-02-22)
 
 
