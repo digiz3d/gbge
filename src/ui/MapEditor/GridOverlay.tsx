@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai";
 import { mapSizeAtom } from "../../state/map";
 import { currentSelectionAtom, isVisibleMapGridAtom } from "../../state/ui";
+import { TILE_SIZE } from "./constants";
 
-const TILE_SIZE = 16;
 const METATILE_SIZE = TILE_SIZE * 2;
 
 export function GridOverlay() {

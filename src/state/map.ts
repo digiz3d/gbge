@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import { confirm, message } from "@tauri-apps/plugin-dialog";
 
 import { tileSetsAtom } from "./tileset";
 import { makeFilledArray } from "./utils";
@@ -50,7 +51,7 @@ export const mapSizeAtom = atom((get) => {
 
 export const createMapAtom = atom(
   null,
-  (get, set, id: string, width: number, height: number) => {
+  async (get, set, id: string, width: number, height: number) => {
     const maps = get(mapsAtom);
     const maxBottom = Math.max(
       ...maps.map((map) => map.worldCoords.y + map.size.height)
@@ -66,7 +67,15 @@ export const createMapAtom = atom(
       worldCoords: { x: maxRight, y: maxBottom - height },
     };
 
+    if (maps.find((map) => map.id === id)) {
+      await message(
+        `A map with the ID "${id}" already exists. Please providea different ID.`
+      );
+      return false;
+    }
+
     set(mapsAtom, [...get(mapsAtom), newMap]);
+    return true;
   }
 );
 
@@ -125,17 +134,25 @@ export const moveMapInWorldAtom = atom(
   }
 );
 
-export const deleteMapByIndexAtom = atom(null, (get, set, mapIndex: number) => {
-  const maps = get(mapsAtom);
-  if (maps.length === 1) {
-    return;
+export const deleteMapByIndexAtom = atom(
+  null,
+  async (get, set, mapIndex: number) => {
+    const maps = get(mapsAtom);
+    if (maps.length === 1) {
+      return;
+    }
+    const confirmed = await confirm(
+      `Are you sure? It will delete the map "${maps[mapIndex].id}"`,
+      "Map removal"
+    );
+    if (!confirmed) return;
+    const draft = structuredClone(maps);
+    draft.splice(mapIndex, 1);
+    set(mapsAtom, draft);
   }
-  const draft = structuredClone(maps);
-  draft.splice(mapIndex, 1);
-  set(mapsAtom, draft);
-});
+);
 
-export const mapEditorCanvasAtom = atom((get) => {
+export const mapTilesAtom = atom((get) => {
   const maps = get(mapsAtom);
   const mapIndex = get(currentMapIndexAtom);
   if (mapIndex === null) return [];

@@ -1,8 +1,7 @@
 import { useAtomValue } from "jotai";
 import { highlightMetaTilesAtom } from "../../state/metatile";
 import { mapSizeAtom } from "../../state/map";
-
-const TILE_SIZE = 16;
+import { TILE_SIZE } from "./constants";
 
 export function MetaHighlightOverlay() {
   const highlightedMetaTiles = useAtomValue(highlightMetaTilesAtom);

@@ -8,6 +8,7 @@ import {
   selectedTabIndexAtom,
 } from "../state/ui";
 import { Color, pixelToRgb } from "../state/tiles";
+import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../state/utils";
 
 export function TileEditor() {
   const tab = useAtomValue(selectedTabIndexAtom);
@@ -56,18 +57,18 @@ export function TileEditor() {
           key={i}
           onClick={(e) => {
             e.preventDefault();
-            if (e.button === 1) {
+            if (e.button === MIDDLE_CLICK) {
               setPaintIndex((x) => ((x + 1) % 4) as Color);
             }
           }}
           onMouseDown={(e) => {
-            if (e.button === 0) {
+            if (e.button === LEFT_CLICK) {
               setIsDrawing(true);
               const clonedTile = [...draft];
               clonedTile[i] = paintIndex;
               setDraft(clonedTile);
             }
-            if (e.button === 2) {
+            if (e.button === RIGHT_CLICK) {
               setPaintIndex(draft[i]);
             }
           }}

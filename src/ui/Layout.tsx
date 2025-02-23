@@ -39,9 +39,7 @@ export function Layout() {
       )}
       <div className="flex flex-col h-full">
         <MetaTileCompute />
-        <div className="grow-1 shrink-0 basis-0 overflow-auto">
-          <MetaTileViewer />
-        </div>
+        <MetaTileViewer />
       </div>
     </div>
   );

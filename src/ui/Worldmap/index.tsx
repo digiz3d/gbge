@@ -13,10 +13,7 @@ import {
   moveMapInWorldAtom,
 } from "../../state/map";
 import { tileSetsAtom } from "../../state/tileset";
-
-const LEFT_CLICK = 0;
-const MIDDLE_CLICK = 1;
-const RIGHT_CLICK = 2;
+import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../../state/utils";
 
 const currentPanningAtom = atom({ x: 0, y: 0 });
 const currentZoomAtom = atom(8);
@@ -185,14 +182,15 @@ export function Worldmap() {
           >
             <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
-              const isHighlighted = metaTileSpottedInMap?.has(index) ?? false;
+              const highlightCount =
+                metaTileSpottedInMap?.get(index)?.length ?? null;
 
               return (
                 <MapPreview
                   key={map.id}
                   map={map}
                   tileSet={tileSet}
-                  isHighlighted={isHighlighted}
+                  highlightCount={highlightCount}
                   height={zoom * map.size.height}
                   width={zoom * map.size.width}
                   x={currentPanning.x + zoom * map.worldCoords.x}
