@@ -8,9 +8,13 @@ import {
 import { currentTileSetTilesAtom } from "../../state/tileset";
 import { currentMapIndexAtom, currentSelectionAtom } from "../../state/ui";
 import { useLayoutEffect, useRef } from "react";
+import { togglePinnedMetaTileAtom } from "../../state/metatiles-pinned";
+import { LEFT_CLICK, RIGHT_CLICK } from "../../state/utils";
+import { PinnedMetaTiles } from "./PinnedMetaTiles";
 
 export function MetaTileViewer() {
   const metaTiles = useAtomValue(metaTilesAtom);
+  const togglePinnedMetaTile = useSetAtom(togglePinnedMetaTileAtom);
   const tiles = useAtomValue(currentTileSetTilesAtom);
   const setHoveringMetaTile = useSetAtom(highlightMetaTilesAtom);
   const setHoveredMetaTileIndex = useSetAtom(hoveredMetaTileIndexAtom);
@@ -35,59 +39,74 @@ export function MetaTileViewer() {
   }, [currentSelection.mode, currentSelection.index]);
 
   return (
-    <div className="grow-1 shrink-0 basis-0 overflow-auto" ref={containerRef}>
-      <div className="grid grid-cols-2 w-[256px] h-fit">
-        {metaTiles.map(({ spottedAt, spottedCount, tileIndexes }, index) => {
-          const isSelected =
-            currentSelection.mode === "metaTile" &&
-            index === currentSelection.index;
+    <div className="grow-1 shrink-0 basis-0 flex flex-col">
+      <PinnedMetaTiles />
+      <div
+        className="overflow-scroll grow-1 shrink-0 basis-0"
+        ref={containerRef}
+      >
+        <div className="grid grid-cols-2 w-[256px] h-fit">
+          {metaTiles.map(({ spottedAt, spottedCount, tileIndexes }, index) => {
+            const isSelected =
+              currentSelection.mode === "metaTile" &&
+              index === currentSelection.index;
 
-          const locallySpotted =
-            currentMapIndex !== null
-              ? spottedAt.get(currentMapIndex) ?? null
-              : null;
+            const locallySpotted =
+              currentMapIndex !== null
+                ? spottedAt.get(currentMapIndex) ?? null
+                : null;
 
-          const locallySpottedLen = locallySpotted?.length ?? 0;
+            const locallySpottedLen = locallySpotted?.length ?? 0;
 
-          return (
-            <div
-              className={`relative h-[128px] w-[128px] ring grid grid-cols-2 grid-rows-2 cursor-pointer ${
-                isSelected ? "contrast-150" : ""
-              }`}
-              key={index}
-              onClick={() =>
-                setCurrentSelection({
-                  mode: "metaTile",
-                  index,
-                  trigger: "manual",
-                })
-              }
-              onMouseEnter={() => {
-                setHoveredMetaTileIndex(index);
-                setHoveringMetaTile(locallySpotted ?? []);
-              }}
-              onMouseLeave={() => {
-                setHoveredMetaTileIndex(null);
-                setHoveringMetaTile([]);
-              }}
-            >
-              <div className="text-xs absolute bottom-1 text-white font-bold flex flex-row justify-between w-full">
-                <div className="text ml-1">
-                  {locallySpotted ? locallySpottedLen : null}
+            return (
+              <div
+                className={`relative h-[128px] w-[128px] ring grid grid-cols-2 grid-rows-2 cursor-pointer ${
+                  isSelected ? "contrast-150" : ""
+                }`}
+                key={index}
+                onMouseDown={(e) => {
+                  console.log("clicked", e.button);
+                  if (e.button === LEFT_CLICK) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setCurrentSelection({
+                      mode: "metaTile",
+                      index,
+                      trigger: "manual",
+                    });
+                  } else if (e.button === RIGHT_CLICK) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    togglePinnedMetaTile(index);
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHoveredMetaTileIndex(index);
+                  setHoveringMetaTile(locallySpotted ?? []);
+                }}
+                onMouseLeave={() => {
+                  setHoveredMetaTileIndex(null);
+                  setHoveringMetaTile([]);
+                }}
+              >
+                <div className="text-xs absolute bottom-1 text-white font-bold flex flex-row justify-between w-full">
+                  <div className="text ml-1">
+                    {locallySpotted ? locallySpottedLen : null}
+                  </div>
+                  <div className="mr-1">{spottedCount}</div>
                 </div>
-                <div className="mr-1">{spottedCount}</div>
+                {tileIndexes.map((tileIndex, j) => (
+                  <img
+                    style={{ imageRendering: "pixelated" }}
+                    className="h-[64px] w-[64px]"
+                    src={createTileImage(tiles[tileIndex])}
+                    key={`${index}-${j}`}
+                  />
+                ))}
               </div>
-              {tileIndexes.map((tileIndex, j) => (
-                <img
-                  style={{ imageRendering: "pixelated" }}
-                  className="h-[64px] w-[64px]"
-                  src={createTileImage(tiles[tileIndex])}
-                  key={`${index}-${j}`}
-                />
-              ))}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
