@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
 import { useAtomValue, useSetAtom } from "jotai";
 import { mapSizeAtom, resizeMapAtom } from "../../state/map";
-import { currentMapIndexAtom } from "../../state/ui";
+import { currentEditedMapIndexAtom } from "../../state/ui";
 
 export function ResizeMapModal({
   close,
@@ -13,7 +13,7 @@ export function ResizeMapModal({
 }) {
   const { width: mapWidth, height: mapHeight } = useAtomValue(mapSizeAtom);
   const resizeMap = useSetAtom(resizeMapAtom);
-  const currentMapIndex = useAtomValue(currentMapIndexAtom);
+  const currentMapIndex = useAtomValue(currentEditedMapIndexAtom);
 
   const [width, setWidth] = useState(mapWidth);
   const [height, setHeight] = useState(mapHeight);

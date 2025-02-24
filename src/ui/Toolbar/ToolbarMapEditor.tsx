@@ -4,13 +4,13 @@ import { BeltTileButton } from "./Belt/BeltTileButton";
 import {
   areMapIdsVisibleAtom,
   isVisibleMapGridAtom,
-  isVisibleMapOverlayAtom,
+  isVisibleZoneAtom,
 } from "../../state/ui";
 import { pixelToRgb, Tile } from "../../state/tiles";
 
 export function ToolbarMapEditor() {
   const [isGridVisible, toggleGrid] = useAtom(isVisibleMapGridAtom);
-  const [isOverlayVisible, toggleScreen] = useAtom(isVisibleMapOverlayAtom);
+  const [isOverlayVisible, toggleScreen] = useAtom(isVisibleZoneAtom);
   const [areMapIdsVisible, toggleMapIDs] = useAtom(areMapIdsVisibleAtom);
 
   return (

@@ -3,7 +3,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { atom } from "jotai";
 import { computeMetaTilesAtom } from "../state/metatile";
 import { MapEntity, mapsAtom } from "../state/map";
-import { currentMapIndexAtom } from "../state/ui";
+import { currentEditedMapIndexAtom } from "../state/ui";
 
 const filters = [{ name: "GBGE Maps", extensions: ["gbge-maps"] }];
 
@@ -21,7 +21,7 @@ export const loadMapsAtom = atom(null, async (_, set) => {
   const mapsJson = await readTextFile(loadPath);
   const maps = JSON.parse(mapsJson) as MapEntity[];
   if (maps.length === 0) return;
-  set(currentMapIndexAtom, null);
+  set(currentEditedMapIndexAtom, null);
   set(mapsAtom, maps);
   set(computeMetaTilesAtom);
 });

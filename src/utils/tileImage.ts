@@ -3,36 +3,34 @@ import { LRUCache } from "lru-cache";
 import { MapEntity } from "../state/map";
 import { Color, pixelToRgb, Tile, TileSet } from "../state/tiles";
 
-const tileCache = new LRUCache<string, string>({
-  max: 1024,
-});
-
-const mapCache = new LRUCache<string, string>({
-  max: 128,
-});
+const mapImageCache = new LRUCache<string, string>({ max: 128 });
+const tileCanvasCache = new LRUCache<string, HTMLCanvasElement>({ max: 128 });
+const tileImageCache = new LRUCache<string, string>({ max: 128 });
 
 const TILE_PIXEL_SIZE = 8;
 
-export function createTileImage(tile: Tile): string {
+export function createTileCanvas(tile: Tile): HTMLCanvasElement {
   const cacheKey = tile.join(",");
-  const cached = tileCache.get(cacheKey);
+  const cached = tileCanvasCache.get(cacheKey);
   if (cached) return cached;
 
   const canvas = document.createElement("canvas");
   canvas.width = 8;
   canvas.height = 8;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return "";
+  if (!ctx) throw new Error("Failed to create tile canvas");
 
-  tile.forEach((pixel, index) => {
-    const x = index % 8;
-    const y = Math.floor(index / 8);
-    ctx.fillStyle = pixelToRgb[pixel];
-    ctx.fillRect(x, y, 1, 1);
-  });
+  drawTile(ctx, tile, 0, 0);
 
+  tileCanvasCache.set(cacheKey, canvas);
+  return canvas;
+}
+
+export function createTileImage(tile: Tile): string {
+  const cacheKey = tile.join(",");
+  const canvas = createTileCanvas(tile);
   const dataUrl = canvas.toDataURL();
-  tileCache.set(cacheKey, dataUrl);
+  tileImageCache.set(cacheKey, dataUrl);
   return dataUrl;
 }
 
@@ -40,7 +38,7 @@ export function createMapImage(map: MapEntity, tileSet: TileSet): string {
   const cacheKey = `${JSON.stringify(map.tilesIndexes)}-${JSON.stringify(
     tileSet
   )}`;
-  const cached = mapCache.get(cacheKey);
+  const cached = mapImageCache.get(cacheKey);
   if (cached) return cached;
 
   const canvas = document.createElement("canvas");
@@ -71,7 +69,7 @@ export function createMapImage(map: MapEntity, tileSet: TileSet): string {
   ctx.stroke();
 
   const dataUrl = canvas.toDataURL();
-  mapCache.set(cacheKey, dataUrl);
+  mapImageCache.set(cacheKey, dataUrl);
   return dataUrl;
 }
 

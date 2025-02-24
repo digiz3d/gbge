@@ -3,7 +3,7 @@ import { confirm, message } from "@tauri-apps/plugin-dialog";
 
 import { tileSetsAtom } from "./tileset";
 import { makeFilledArray } from "./utils";
-import { currentMapIndexAtom, currentSelectionAtom } from "./ui";
+import { currentEditedMapIndexAtom, currentSelectionAtom } from "./ui";
 
 export type MapEntity = {
   id: string;
@@ -40,7 +40,7 @@ export const mapsAtom = atom(initialMaps);
 
 export const mapSizeAtom = atom((get) => {
   const maps = get(mapsAtom);
-  const mapIndex = get(currentMapIndexAtom);
+  const mapIndex = get(currentEditedMapIndexAtom);
   if (mapIndex === null) return { width: 0, height: 0 };
   const map = maps[mapIndex];
   return {
@@ -83,7 +83,7 @@ export const setMapTileIndexesAtom = atom(
   null,
   (get, set, tileX: number, tileY: number) => {
     const currentSelection = get(currentSelectionAtom);
-    const currentMapIndex = get(currentMapIndexAtom);
+    const currentMapIndex = get(currentEditedMapIndexAtom);
     if (currentMapIndex === null) return;
     const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
 
@@ -99,6 +99,18 @@ export const setMapTileIndexesAtom = atom(
   }
 );
 
+export const updateMapTilesIndexesAtom = atom(
+  null,
+  (get, set, tilesIndexes: number[]) => {
+    const currentMapIndex = get(currentEditedMapIndexAtom);
+    if (currentMapIndex === null) return;
+
+    const draft = structuredClone(get(mapsAtom));
+    draft[currentMapIndex].tilesIndexes = structuredClone(tilesIndexes);
+    set(mapsAtom, draft);
+  }
+);
+
 export const resizeMapAtom = atom(
   null,
   (get, set, width: number, height: number) => {
@@ -106,7 +118,7 @@ export const resizeMapAtom = atom(
     if (width === currentWidth && height === currentHeight) return;
 
     const maps = get(mapsAtom);
-    const mapIndex = get(currentMapIndexAtom);
+    const mapIndex = get(currentEditedMapIndexAtom);
     if (mapIndex === null) return;
 
     const arr = maps[mapIndex].tilesIndexes;
@@ -154,7 +166,7 @@ export const deleteMapByIndexAtom = atom(
 
 export const mapTilesAtom = atom((get) => {
   const maps = get(mapsAtom);
-  const mapIndex = get(currentMapIndexAtom);
+  const mapIndex = get(currentEditedMapIndexAtom);
   if (mapIndex === null) return [];
   const tileSets = get(tileSetsAtom);
 

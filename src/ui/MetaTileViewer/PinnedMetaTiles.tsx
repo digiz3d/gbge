@@ -1,12 +1,15 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { createTileImage } from "../../utils/tileImage";
 import {
-  highlightMetaTilesAtom,
+  highlightMetaTilesIndexesAtom,
   hoveredMetaTileIndexAtom,
   metaTilesAtom,
 } from "../../state/metatile";
 import { currentTileSetTilesAtom } from "../../state/tileset";
-import { currentMapIndexAtom, currentSelectionAtom } from "../../state/ui";
+import {
+  currentEditedMapIndexAtom,
+  currentSelectionAtom,
+} from "../../state/ui";
 import {
   pinnedMetaTileIndexesAtom,
   togglePinnedMetaTileAtom,
@@ -18,10 +21,10 @@ export function PinnedMetaTiles() {
   const pinnedMetaTileIndexes = useAtomValue(pinnedMetaTileIndexesAtom);
   const togglePinnedMetaTile = useSetAtom(togglePinnedMetaTileAtom);
   const tiles = useAtomValue(currentTileSetTilesAtom);
-  const setHoveringMetaTile = useSetAtom(highlightMetaTilesAtom);
+  const setHoveringMetaTile = useSetAtom(highlightMetaTilesIndexesAtom);
   const setHoveredMetaTileIndex = useSetAtom(hoveredMetaTileIndexAtom);
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
-  const currentMapIndex = useAtomValue(currentMapIndexAtom);
+  const currentMapIndex = useAtomValue(currentEditedMapIndexAtom);
 
   if (pinnedMetaTileIndexes.length === 0) return null;
 

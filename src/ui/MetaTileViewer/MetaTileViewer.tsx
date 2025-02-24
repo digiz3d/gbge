@@ -1,12 +1,15 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { createTileImage } from "../../utils/tileImage";
 import {
-  highlightMetaTilesAtom,
+  highlightMetaTilesIndexesAtom,
   hoveredMetaTileIndexAtom,
   metaTilesAtom,
 } from "../../state/metatile";
 import { currentTileSetTilesAtom } from "../../state/tileset";
-import { currentMapIndexAtom, currentSelectionAtom } from "../../state/ui";
+import {
+  currentEditedMapIndexAtom,
+  currentSelectionAtom,
+} from "../../state/ui";
 import { useLayoutEffect, useRef } from "react";
 import { togglePinnedMetaTileAtom } from "../../state/metatiles-pinned";
 import { LEFT_CLICK, RIGHT_CLICK } from "../../state/utils";
@@ -16,10 +19,10 @@ export function MetaTileViewer() {
   const metaTiles = useAtomValue(metaTilesAtom);
   const togglePinnedMetaTile = useSetAtom(togglePinnedMetaTileAtom);
   const tiles = useAtomValue(currentTileSetTilesAtom);
-  const setHoveringMetaTile = useSetAtom(highlightMetaTilesAtom);
+  const setHoveringMetaTile = useSetAtom(highlightMetaTilesIndexesAtom);
   const setHoveredMetaTileIndex = useSetAtom(hoveredMetaTileIndexAtom);
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
-  const currentMapIndex = useAtomValue(currentMapIndexAtom);
+  const currentMapIndex = useAtomValue(currentEditedMapIndexAtom);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -42,7 +45,7 @@ export function MetaTileViewer() {
     <div className="grow-1 shrink-0 basis-0 flex flex-col">
       <PinnedMetaTiles />
       <div
-        className="overflow-scroll grow-1 shrink-0 basis-0"
+        className="overflow-y-scroll grow-1 shrink-0 basis-0"
         ref={containerRef}
       >
         <div className="grid grid-cols-2 w-[256px] h-fit">

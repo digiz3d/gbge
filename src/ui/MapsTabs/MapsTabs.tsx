@@ -1,10 +1,13 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { currentMapIndexAtom, unfocusMapToEditAtom } from "../../state/ui";
+import {
+  currentEditedMapIndexAtom,
+  unfocusMapToEditAtom,
+} from "../../state/ui";
 import { mapsAtom } from "../../state/map";
 
 export function MapsTabs() {
   const maps = useAtomValue(mapsAtom);
-  const currentMapIndex = useAtomValue(currentMapIndexAtom);
+  const currentMapIndex = useAtomValue(currentEditedMapIndexAtom);
   const unfocusMapToEdit = useSetAtom(unfocusMapToEditAtom);
 
   if (currentMapIndex === null) return null;
@@ -19,7 +22,7 @@ export function MapsTabs() {
       >
         Back
       </button>
-      <div>Currently visiting map "{currentMap.id}"</div>
+      <div>Editing map "{currentMap.id}"</div>
     </div>
   );
 }

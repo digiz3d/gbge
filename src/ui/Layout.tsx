@@ -1,42 +1,25 @@
 import { MetaTileViewer } from "./MetaTileViewer/MetaTileViewer";
 import { TileSetViewer } from "./TileSetViewer";
 import { TileEditor } from "./TileEditor";
-import { MapVisibleOverlay } from "./MapEditor/MapVisibleOverlay";
-import { MapEditor } from "./MapEditor";
 import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
-import { MetaHighlightOverlay } from "./MapEditor/MetaHighlightOverlay";
-import { GridOverlay } from "./MapEditor/GridOverlay";
-import { MapsTabs } from "./MapsTabs/MapsTabs";
+import { currentEditedMapIndexAtom } from "../state/ui";
 import { useAtomValue } from "jotai";
-import { worldmapAtom } from "../state/ui";
-import { Worldmap } from "./Worldmap";
+import { WorldmapEdit } from "./Worldmap/WorldMapEdit";
+import { Worldmap } from "./Worldmap/WorldMap";
 
 export function Layout() {
-  const worldmap = useAtomValue(worldmapAtom);
-
+  const isEditingMap = useAtomValue(currentEditedMapIndexAtom);
   return (
     <div className="flex flex-row h-full p-4">
       <div className="flex flex-col h-full">
         <div className="grow-0 shrink-1 basis-0 mb-4">
           <TileEditor />
         </div>
-        <div className="grow-1 shrink-0 basis-0 overflow-auto">
+        <div className="grow-1 shrink-0 basis-0 overflow-y-scroll">
           <TileSetViewer />
         </div>
       </div>
-      {worldmap ? (
-        <Worldmap />
-      ) : (
-        <div className="flex-1 flex items-center flex-col">
-          <MapsTabs />
-          <div className="relative h-[600px] w-[600px] overflow-scroll">
-            <MapEditor />
-            <MapVisibleOverlay />
-            <MetaHighlightOverlay />
-            <GridOverlay />
-          </div>
-        </div>
-      )}
+      {isEditingMap !== null ? <WorldmapEdit /> : <Worldmap />}
       <div className="flex flex-col h-full">
         <MetaTileCompute />
         <MetaTileViewer />
