@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/digiz3d/gbge/compare/v0.7.0...v0.7.1) (2025-02-28)
+
+
+### Performance Improvements
+
+* use canvas to edit the map ([#24](https://github.com/digiz3d/gbge/issues/24)) ([244d635](https://github.com/digiz3d/gbge/commit/244d635eb19a2a06eea14d1afa249cd12ea5e807))
+
 ## [0.7.0](https://github.com/digiz3d/gbge/compare/v0.6.1...v0.7.0) (2025-02-23)
 
 
