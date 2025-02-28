@@ -10,9 +10,9 @@ import { Worldmap } from "./Worldmap/WorldMap";
 export function Layout() {
   const isEditingMap = useAtomValue(currentEditedMapIndexAtom);
   return (
-    <div className="flex flex-row h-full p-4">
-      <div className="flex flex-col h-full">
-        <div className="grow-0 shrink-1 basis-0 mb-4">
+    <div className="flex flex-row h-full p-2">
+      <div className="flex flex-col h-full mr-2">
+        <div className="grow-0 shrink-1 basis-0 mb-2">
           <TileEditor />
         </div>
         <div className="grow-1 shrink-0 basis-0 overflow-y-scroll">
@@ -20,7 +20,7 @@ export function Layout() {
         </div>
       </div>
       {isEditingMap !== null ? <WorldmapEdit /> : <Worldmap />}
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full ml-2">
         <MetaTileCompute />
         <MetaTileViewer />
       </div>
