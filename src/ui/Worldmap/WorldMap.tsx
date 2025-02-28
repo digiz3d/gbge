@@ -187,6 +187,7 @@ export function Worldmap() {
 
               return (
                 <MapPreview
+                  mapIndex={index}
                   key={map.id}
                   map={map}
                   tileSet={tileSet}

@@ -1,14 +1,18 @@
 import Konva from "konva";
-import { useMemo } from "react";
-import { Image, Rect, Text } from "react-konva";
-import useImage from "use-image";
-import { createMapImage } from "../../utils/tileImage";
+import { Rect, Text } from "react-konva";
 import { useAtomValue } from "jotai";
 import { MapEntity } from "../../state/map";
-import { areMapIdsVisibleAtom } from "../../state/ui";
+import {
+  areMapIdsVisibleAtom,
+  currentEditedMapIndexAtom,
+  isVisibleMapGridAtom,
+} from "../../state/ui";
 import { TileSet } from "../../state/tiles";
+import { MapGrid } from "./MapGrid";
+import { MapPreviewStatic } from "./MapPreviewStatic";
 
 export function MapPreview(props: {
+  mapIndex: number;
   map: MapEntity;
   tileSet: TileSet;
   highlightCount: number | null;
@@ -19,9 +23,13 @@ export function MapPreview(props: {
   onMouseDown?: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
   onMouseEnter?: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
   onMouseLeave?: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
+  onMouseMove?: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
 }) {
+  const isGridVisible = useAtomValue(isVisibleMapGridAtom);
   const areMapIdsVisible = useAtomValue(areMapIdsVisibleAtom);
+  const currentEditedMapIndex = useAtomValue(currentEditedMapIndexAtom);
   const {
+    mapIndex,
     map,
     tileSet,
     highlightCount,
@@ -32,10 +40,9 @@ export function MapPreview(props: {
     onMouseDown,
     onMouseEnter,
     onMouseLeave,
+    onMouseMove,
   } = props;
-  const url = useMemo(() => createMapImage(map, tileSet), [map, tileSet]);
-
-  const [img] = useImage(url);
+  const isEditingMap = mapIndex === currentEditedMapIndex;
 
   const textX = x + 2;
   const textY = y + 2;
@@ -44,16 +51,23 @@ export function MapPreview(props: {
 
   return (
     <>
-      <Image
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        image={img}
-        onMouseDown={onMouseDown}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-      />
+      {isEditingMap ? null : (
+        <MapPreviewStatic
+          map={map}
+          tileSet={tileSet}
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          onMouseDown={onMouseDown}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          onMouseMove={onMouseMove}
+        />
+      )}
+      {isEditingMap && isGridVisible && (
+        <MapGrid x={x} y={y} width={width} height={height} map={map} />
+      )}
       {areMapIdsVisible && (
         <>
           <Text
@@ -85,6 +99,7 @@ export function MapPreview(props: {
             height={height}
             fill="#4f39f6"
             opacity={0.25}
+            listening={false}
           />
           <Text
             text={highlightCount.toString()}

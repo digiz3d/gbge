@@ -2,7 +2,7 @@ import { atom, ExtractAtomValue, Getter, Setter } from "jotai";
 
 import { focusAtom } from "jotai-optics";
 import { mapsAtom, mapSizeAtom, mapTilesAtom } from "./map";
-import { currentMapIndexAtom, currentSelectionAtom } from "./ui";
+import { currentEditedMapIndexAtom, currentSelectionAtom } from "./ui";
 import { Tile } from "./tiles";
 import { currentTileSetTilesAtom } from "./tileset";
 import { pinnedMetaTileIndexesAtom } from "./metatiles-pinned";
@@ -15,7 +15,7 @@ export const metaTilesAtom = atom<
   }[]
 >([]);
 export const hoveredMetaTileIndexAtom = atom<number | null>(null);
-export const highlightMetaTilesAtom = atom<number[]>([]);
+export const highlightMetaTilesIndexesAtom = atom<number[]>([]);
 
 export type MetaTile = ExtractAtomValue<typeof metaTilesAtom>[number];
 
@@ -23,7 +23,7 @@ export const setMapTileIndexesFromMetaTileAtom = atom(
   null,
   (get, set, metaTileX: number, metaTileY: number) => {
     const currentSelection = get(currentSelectionAtom);
-    const mapIndex = get(currentMapIndexAtom);
+    const mapIndex = get(currentEditedMapIndexAtom);
 
     if (mapIndex === null) return;
     if (currentSelection.mode !== "metaTile") return;
