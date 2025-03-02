@@ -39,7 +39,7 @@ export function MetaTileViewer() {
       top,
       behavior: "smooth",
     });
-  }, [currentSelection.mode, currentSelection.index]);
+  }, [currentSelection]);
 
   return (
     <div className="grow-1 shrink-0 basis-0 flex flex-col">
@@ -75,6 +75,7 @@ export function MetaTileViewer() {
                       mode: "metaTile",
                       index,
                       trigger: "manual",
+                      tool: "brush",
                     });
                   } else if (e.button === RIGHT_CLICK) {
                     e.preventDefault();

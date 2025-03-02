@@ -49,6 +49,18 @@ export function TileEditor() {
     );
   }
 
+  console.log(
+    draft
+      .reduce((acc: string[], cur: number, index: number) => {
+        if (index % 8 === 0) {
+          acc.push("");
+        }
+        acc[acc.length - 1] += cur + ", ";
+        return acc;
+      }, [])
+      .join("\n")
+  );
+
   return (
     <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden">
       {draft.map((pixel, i) => (

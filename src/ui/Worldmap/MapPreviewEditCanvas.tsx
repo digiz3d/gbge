@@ -1,5 +1,5 @@
-import { useAtomValue, useSetAtom } from "jotai";
-import { useRef, useEffect, useState } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useRef, useEffect } from "react";
 import { mapsAtom, updateMapTilesIndexesAtom } from "../../state/map";
 import { currentTileSetTilesAtom } from "../../state/tileset";
 import {
@@ -27,18 +27,15 @@ export function MapPreviewEditCanvas(props: {
   y: number;
 }) {
   const metaTiles = useAtomValue(metaTilesAtom);
-  const render = useRef(0);
   const { mapIndex, x, y } = props;
   const maps = useAtomValue(mapsAtom);
   const map = maps[mapIndex];
-  const { height, width } = map.size;
   const tileSetTiles = useAtomValue(currentTileSetTilesAtom);
   const updateMapTilesIndexes = useSetAtom(updateMapTilesIndexesAtom);
-  const currentSelection = useAtomValue(currentSelectionAtom);
+  const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
   const canvasRef = useRef<Konva.Layer>(null);
   const tilesDraft = useRef(map.tilesIndexes.slice());
   const isDrawingRef = useRef(false);
-  const [, forceUpdate] = useState({});
   const isGridVisible = useAtomValue(isVisibleMapGridAtom);
   const isZoneVisible = useAtomValue(isVisibleZoneAtom);
   const droppickMetaTile = useSetAtom(droppickMetaTileAtom);
@@ -46,16 +43,23 @@ export function MapPreviewEditCanvas(props: {
   const highlightedMetaTilesIndexes = useAtomValue(
     highlightMetaTilesIndexesAtom
   );
-
-  render.current++;
+  const selectionZoneRef = useRef<{
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+  } | null>(null);
 
   function drawMap(ctx: CanvasRenderingContext2D) {
+    if (!canvasRef.current) {
+      console.log("no canvas");
+      return;
+    }
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    for (let yy = 0; yy < height; yy++) {
-      for (let xx = 0; xx < width; xx++) {
-        const tileIndex = tilesDraft.current[yy * width + xx];
-        const canvas = createTileCanvas(tileSetTiles[tileIndex]);
+    let i = 0;
+    for (let yy = 0; yy < map.size.height; yy++) {
+      for (let xx = 0; xx < map.size.width; xx++) {
+        const tileIndexInTileSet = tilesDraft.current[yy * map.size.width + xx];
+        const canvas = createTileCanvas(tileSetTiles[tileIndexInTileSet]);
         ctx.drawImage(
           canvas,
           x + xx * tileSizePx,
@@ -63,28 +67,62 @@ export function MapPreviewEditCanvas(props: {
           tileSizePx,
           tileSizePx
         );
+        if (
+          currentSelection.mode === "mapTiles" &&
+          currentSelection.indexes.includes(i)
+        ) {
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(200,200,255,0.5)";
+          ctx.rect(
+            x + xx * tileSizePx,
+            y + yy * tileSizePx,
+            tileSizePx,
+            tileSizePx
+          );
+          ctx.fill();
+        }
+        i++;
       }
     }
 
     if (isGridVisible) {
-      drawGrid(ctx, x, y, width, height, currentSelection.mode);
+      drawGrid(
+        ctx,
+        x,
+        y,
+        map.size.width,
+        map.size.height,
+        currentSelection.mode
+      );
     }
 
-    drawHighlightedMetaTiles(ctx, x, y, width, highlightedMetaTilesIndexes);
+    drawHighlightedMetaTiles(
+      ctx,
+      x,
+      y,
+      map.size.width,
+      highlightedMetaTilesIndexes
+    );
 
     if (isZoneVisible) {
       drawZone(ctx, x, y);
     }
+
+    if (selectionZoneRef.current) {
+      drawSelection(
+        ctx,
+        x + selectionZoneRef.current.from.x,
+        y + selectionZoneRef.current.from.y,
+        selectionZoneRef.current.to.x - selectionZoneRef.current.from.x,
+        selectionZoneRef.current.to.y - selectionZoneRef.current.from.y
+      );
+    }
   }
 
   useEffect(() => {
-    if (render.current === 1) {
-      setTimeout(() => forceUpdate({}), 0);
-      return;
-    }
-
     const canvas = canvasRef.current;
     if (!canvas) {
+      console.log("no canvas");
       return;
     }
 
@@ -92,6 +130,12 @@ export function MapPreviewEditCanvas(props: {
 
     const ctx = mapActualCanvas.getContext("2d");
     if (!ctx) {
+      console.log("no ctx");
+      return;
+    }
+
+    if (!ctx.canvas.width || !ctx.canvas.height) {
+      console.log("no width or height");
       return;
     }
 
@@ -103,14 +147,15 @@ export function MapPreviewEditCanvas(props: {
         const xx = Math.floor((e.clientX - rect.left - x) / tileSizePx);
         const yy = Math.floor((e.clientY - rect.top - y) / tileSizePx);
 
-        if (!(xx >= 0 && xx < width && yy >= 0 && yy < height)) {
+        if (
+          !(xx >= 0 && xx < map.size.width && yy >= 0 && yy < map.size.height)
+        ) {
           return;
         }
 
-        const index = yy * width + xx;
+        const index = yy * map.size.width + xx;
         if (tilesDraft.current[index] !== currentSelection.index) {
           tilesDraft.current[index] = currentSelection.index;
-          drawMap(ctx);
         }
       } else if (currentSelection.mode === "metaTile") {
         const metaTileX =
@@ -121,24 +166,99 @@ export function MapPreviewEditCanvas(props: {
         if (
           !(
             metaTileX >= 0 &&
-            metaTileX < width &&
+            metaTileX < map.size.width &&
             metaTileY >= 0 &&
-            metaTileY < height
+            metaTileY < map.size.height
           )
         ) {
           return;
         }
 
-        const tileIndex = metaTileY * width + metaTileX;
+        const tileIndex = metaTileY * map.size.width + metaTileX;
 
         const metaTile = metaTiles[currentSelection.index];
         const [i1, i2, i3, i4] = metaTile.tileIndexes;
         tilesDraft.current[tileIndex] = i1;
         tilesDraft.current[tileIndex + 1] = i2;
-        tilesDraft.current[tileIndex + width] = i3;
-        tilesDraft.current[tileIndex + width + 1] = i4;
-        drawMap(ctx);
+        tilesDraft.current[tileIndex + map.size.width] = i3;
+        tilesDraft.current[tileIndex + map.size.width + 1] = i4;
       }
+      drawMap(ctx);
+    };
+
+    const handleSelectionInit = (e: MouseEvent) => {
+      console.log("selectionInit");
+      const rect = mapActualCanvas.getBoundingClientRect();
+      const xx = Math.floor(e.clientX - rect.left - x);
+      const yy = Math.floor(e.clientY - rect.top - y);
+      selectionZoneRef.current = {
+        from: { x: xx, y: yy },
+        to: { x: xx, y: yy },
+      };
+      drawMap(ctx);
+    };
+
+    const handleSelectionMove = (e: MouseEvent) => {
+      // console.log("selectionMove");
+      const rect = mapActualCanvas.getBoundingClientRect();
+      const xx = Math.floor(e.clientX - rect.left - x);
+      const yy = Math.floor(e.clientY - rect.top - y);
+      selectionZoneRef.current!.to = { x: xx, y: yy };
+      drawMap(ctx);
+    };
+
+    const handleSelectionEnd = (_: MouseEvent) => {
+      const tileIndexes: number[] = [];
+      if (!selectionZoneRef.current) {
+        return;
+      }
+
+      const minX = Math.min(
+        selectionZoneRef.current.from.x,
+        selectionZoneRef.current.to.x
+      );
+      const maxX = Math.max(
+        selectionZoneRef.current.from.x,
+        selectionZoneRef.current.to.x
+      );
+      const minY = Math.min(
+        selectionZoneRef.current.from.y,
+        selectionZoneRef.current.to.y
+      );
+      const maxY = Math.max(
+        selectionZoneRef.current.from.y,
+        selectionZoneRef.current.to.y
+      );
+
+      // allows counting from start of first tile
+      const minXFromStart = minX - (minX % tileSizePx);
+      const minYFromStart = minY - (minY % tileSizePx);
+
+      // for loop that adds tile indexes
+      for (let yy = minYFromStart; yy <= maxY; yy += tileSizePx) {
+        for (let xx = minXFromStart; xx <= maxX; xx += tileSizePx) {
+          const tileX = Math.floor(xx / tileSizePx);
+          const tileY = Math.floor(yy / tileSizePx);
+          if (
+            tileX >= 0 &&
+            tileX < map.size.width &&
+            tileY >= 0 &&
+            tileY < map.size.height
+          ) {
+            tileIndexes.push(tileY * map.size.width + tileX);
+          }
+        }
+      }
+
+      selectionZoneRef.current = null;
+
+      setCurrentSelection({
+        indexes: tileIndexes,
+        mode: "mapTiles",
+        tool: "selection",
+        trigger: "manual",
+        width: maxX - minX,
+      });
     };
 
     const handleDroppick = (e: MouseEvent) => {
@@ -147,11 +267,13 @@ export function MapPreviewEditCanvas(props: {
         const xx = Math.floor((e.clientX - rect.left - x) / tileSizePx);
         const yy = Math.floor((e.clientY - rect.top - y) / tileSizePx);
 
-        if (!(xx >= 0 && xx < width && yy >= 0 && yy < height)) {
+        if (
+          !(xx >= 0 && xx < map.size.width && yy >= 0 && yy < map.size.height)
+        ) {
           return;
         }
 
-        const index = yy * width + xx;
+        const index = yy * map.size.width + xx;
         const tile = tileSetTiles[tilesDraft.current[index]];
         droppickTile(tile);
       } else if (currentSelection.mode === "metaTile") {
@@ -163,22 +285,22 @@ export function MapPreviewEditCanvas(props: {
         if (
           !(
             metaTileX >= 0 &&
-            metaTileX < width &&
+            metaTileX < map.size.width &&
             metaTileY >= 0 &&
-            metaTileY < height
+            metaTileY < map.size.height
           )
         ) {
           return;
         }
 
-        const tileIndex = metaTileY * width + metaTileX;
+        const tileIndex = metaTileY * map.size.width + metaTileX;
 
         droppickMetaTile({
           tileIndexes: [
             tilesDraft.current[tileIndex],
             tilesDraft.current[tileIndex + 1],
-            tilesDraft.current[tileIndex + width],
-            tilesDraft.current[tileIndex + width + 1],
+            tilesDraft.current[tileIndex + map.size.width],
+            tilesDraft.current[tileIndex + map.size.width + 1],
           ],
         });
       }
@@ -187,16 +309,20 @@ export function MapPreviewEditCanvas(props: {
     const handleMouseDown = (e: Event) => {
       if (!(e instanceof MouseEvent)) return;
       if (e.button === LEFT_CLICK) {
-        if (
-          e.offsetX < x ||
-          e.offsetX > x + width * tileSizePx ||
-          e.offsetY < y ||
-          e.offsetY > y + height * tileSizePx
-        ) {
-          return;
+        if (currentSelection.tool === "brush") {
+          if (
+            e.offsetX < x ||
+            e.offsetX > x + map.size.width * tileSizePx ||
+            e.offsetY < y ||
+            e.offsetY > y + map.size.height * tileSizePx
+          ) {
+            return;
+          }
+          isDrawingRef.current = true;
+          handleDraw(e);
+        } else if (currentSelection.tool === "selection") {
+          handleSelectionInit(e);
         }
-        isDrawingRef.current = true;
-        handleDraw(e);
       } else if (e.button === RIGHT_CLICK) {
         handleDroppick(e);
       }
@@ -204,33 +330,72 @@ export function MapPreviewEditCanvas(props: {
 
     const handleMouseMove = (e: Event) => {
       if (!(e instanceof MouseEvent)) return;
-      if (!isDrawingRef.current) return;
-      handleDraw(e);
+
+      if (currentSelection.tool === "brush") {
+        if (!isDrawingRef.current) return;
+        handleDraw(e);
+      } else if (currentSelection.tool === "selection") {
+        if (!selectionZoneRef.current) return;
+        handleSelectionMove(e);
+      }
     };
 
-    const handleMouseUp = (_: Event) => {
-      isDrawingRef.current = false;
-      updateMapTilesIndexes(tilesDraft.current);
+    const handleMouseUp = (e: Event) => {
+      if (!(e instanceof MouseEvent)) return;
+
+      if (isDrawingRef.current) {
+        isDrawingRef.current = false;
+        updateMapTilesIndexes(tilesDraft.current);
+      } else if (selectionZoneRef.current) {
+        handleSelectionEnd(e);
+      }
+    };
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (currentSelection.mode === "mapTiles") {
+          const tileIndexes = currentSelection.indexes;
+          tileIndexes.forEach((index) => {
+            tilesDraft.current[index] = 0;
+          });
+          updateMapTilesIndexes(tilesDraft.current);
+          drawMap(ctx);
+        }
+      }
     };
 
     mapActualCanvas.addEventListener("mousedown", handleMouseDown);
     mapActualCanvas.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
       mapActualCanvas.removeEventListener("mousedown", handleMouseDown);
       mapActualCanvas.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("keydown", handleKeyPress);
     };
-  }, [x, y, width, height, render.current]);
+  }, [
+    x,
+    y,
+    map.size.width,
+    map.size.height,
+    currentSelection,
+    isGridVisible,
+    isZoneVisible,
+    tileSetTiles,
+    highlightedMetaTilesIndexes,
+    metaTiles,
+  ]);
 
   return (
     <Layer
+      className="absolute top-0 left-0 touch-none"
+      clearBeforeDraw={false} // prevent empty canvas on mount
+      height={map.size.height}
       imageSmoothingEnabled={false}
       listening={false}
-      className="absolute top-0 left-0 touch-none"
-      height={props.height}
       ref={canvasRef}
-      width={props.width}
+      width={map.size.width}
     />
   );
 }
@@ -241,17 +406,17 @@ function drawGrid(
   y: number,
   mapTilesCountWidth: number,
   mapTilesCountHeight: number,
-  mode: "tile" | "metaTile"
+  mode: "tile" | "metaTile" | "mapTiles"
 ) {
   ctx.strokeStyle = "#ddd";
   ctx.lineWidth = 1;
 
-  const linesCountX =
-    mode === "tile" ? mapTilesCountWidth : mapTilesCountWidth / 2;
-  const linesCountY =
-    mode === "tile" ? mapTilesCountHeight : mapTilesCountHeight / 2;
+  const isTile = mode === "tile" || mode === "mapTiles";
 
-  const spacingFactor = mode === "tile" ? 1 : 4;
+  const linesCountX = isTile ? mapTilesCountWidth : mapTilesCountWidth / 2;
+  const linesCountY = isTile ? mapTilesCountHeight : mapTilesCountHeight / 2;
+
+  const spacingFactor = isTile ? 1 : 4;
   const spacingX = (tileSizePx / mapTilesCountWidth) * spacingFactor;
   // vertical lines
   for (let i = 1; i < linesCountX; i++) {
@@ -299,4 +464,17 @@ function drawZone(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.strokeStyle = "#FF000077";
   ctx.lineWidth = 2;
   ctx.stroke();
+}
+
+function drawSelection(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  ctx.beginPath();
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
+  ctx.rect(x, y, width, height);
+  ctx.fill();
 }

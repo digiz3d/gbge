@@ -121,6 +121,11 @@ export const droppickMetaTileAtom = atom(
           makeMetaTileSignature(metaTile.tileIndexes)
       );
     }
-    set(currentSelectionAtom, { mode: "metaTile", index, trigger: "auto" });
+    set(currentSelectionAtom, {
+      mode: "metaTile",
+      index,
+      trigger: "auto",
+      tool: "brush",
+    });
   }
 );

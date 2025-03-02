@@ -122,6 +122,22 @@ export function WorldmapEdit() {
               const highlightCount =
                 metaTileSpottedInMap?.get(index)?.length ?? null;
 
+              const isOutsideViewport =
+                currentPanning.x + tileSizePx * map.worldCoords.x >
+                  canvasSize.width ||
+                currentPanning.y + tileSizePx * map.worldCoords.y >
+                  canvasSize.height ||
+                currentPanning.x +
+                  tileSizePx * (map.worldCoords.x + map.size.width) <
+                  0 ||
+                currentPanning.y +
+                  tileSizePx * (map.worldCoords.y + map.size.height) <
+                  0;
+
+              if (isOutsideViewport) {
+                return null;
+              }
+
               return (
                 <MapPreview
                   key={map.id}

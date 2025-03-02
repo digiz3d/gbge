@@ -69,7 +69,7 @@ export const createMapAtom = atom(
 
     if (maps.find((map) => map.id === id)) {
       await message(
-        `A map with the ID "${id}" already exists. Please providea different ID.`
+        `A map with the ID "${id}" already exists. Please provide a different ID.`
       );
       return false;
     }

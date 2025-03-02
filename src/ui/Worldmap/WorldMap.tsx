@@ -185,6 +185,21 @@ export function Worldmap() {
               const highlightCount =
                 metaTileSpottedInMap?.get(index)?.length ?? null;
 
+              const isOutsideViewport =
+                currentPanning.x + zoom * map.worldCoords.x >
+                  canvasSize.width ||
+                currentPanning.y + zoom * map.worldCoords.y >
+                  canvasSize.height ||
+                currentPanning.x + zoom * (map.worldCoords.x + map.size.width) <
+                  0 ||
+                currentPanning.y +
+                  zoom * (map.worldCoords.y + map.size.height) <
+                  0;
+
+              if (isOutsideViewport) {
+                return null;
+              }
+
               return (
                 <MapPreview
                   mapIndex={index}
