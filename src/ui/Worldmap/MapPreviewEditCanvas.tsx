@@ -7,7 +7,6 @@ import {
   isVisibleMapGridAtom,
   isVisibleZoneAtom,
 } from "../../state/ui";
-import { tileSizePx } from "./utils";
 import { Layer } from "react-konva";
 import Konva from "konva";
 import { LEFT_CLICK, RIGHT_CLICK } from "../../state/utils";
@@ -18,6 +17,7 @@ import {
   metaTilesAtom,
 } from "../../state/metatile";
 import { droppickTileAtom } from "../../state/tiles";
+import { currentZoomAtom } from "./WorldMap";
 
 export function MapPreviewEditCanvas(props: {
   width: number;
@@ -26,6 +26,7 @@ export function MapPreviewEditCanvas(props: {
   x: number;
   y: number;
 }) {
+  const tileSizePx = useAtomValue(currentZoomAtom);
   const metaTiles = useAtomValue(metaTilesAtom);
   const { mapIndex, x, y } = props;
   const maps = useAtomValue(mapsAtom);
@@ -92,7 +93,8 @@ export function MapPreviewEditCanvas(props: {
         y,
         map.size.width,
         map.size.height,
-        currentSelection.mode
+        currentSelection.mode,
+        tileSizePx
       );
     }
 
@@ -101,11 +103,12 @@ export function MapPreviewEditCanvas(props: {
       x,
       y,
       map.size.width,
-      highlightedMetaTilesIndexes
+      highlightedMetaTilesIndexes,
+      tileSizePx
     );
 
     if (isZoneVisible) {
-      drawZone(ctx, x, y);
+      drawZone(ctx, x, y, tileSizePx);
     }
 
     if (selectionZoneRef.current) {
@@ -403,7 +406,8 @@ function drawGrid(
   y: number,
   mapTilesCountWidth: number,
   mapTilesCountHeight: number,
-  mode: "tile" | "metaTile" | "mapTiles"
+  mode: "tile" | "metaTile" | "mapTiles",
+  tileSizePx: number
 ) {
   ctx.strokeStyle = "#ddd";
   ctx.lineWidth = 1;
@@ -440,7 +444,8 @@ function drawHighlightedMetaTiles(
   x: number,
   y: number,
   mapTilesCountWidth: number,
-  highlightedMetaTilesIndexes: number[]
+  highlightedMetaTilesIndexes: number[],
+  tileSizePx: number
 ) {
   // draw blue square on each highlighted meta tile
   for (let i = 0; i < highlightedMetaTilesIndexes.length; i++) {
@@ -455,7 +460,12 @@ function drawHighlightedMetaTiles(
   }
 }
 
-function drawZone(ctx: CanvasRenderingContext2D, x: number, y: number) {
+function drawZone(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  tileSizePx: number
+) {
   ctx.beginPath();
   ctx.rect(x, y, 20 * tileSizePx, 18 * tileSizePx);
   ctx.strokeStyle = "#FF000077";

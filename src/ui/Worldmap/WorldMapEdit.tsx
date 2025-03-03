@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { currentEditedMapIndexAtom } from "../../state/ui";
 
@@ -11,21 +11,14 @@ import { tileSetsAtom } from "../../state/tileset";
 import { MIDDLE_CLICK } from "../../state/utils";
 import { MapsTabs } from "../MapsTabs/MapsTabs";
 import { MapPreviewEditCanvas } from "./MapPreviewEditCanvas";
-import { tileSizePx } from "./utils";
+import { currentPanningAtom, currentZoomAtom } from "./WorldMap";
 
 export function WorldmapEdit() {
   const currentMapIndex = useAtomValue(currentEditedMapIndexAtom)!;
   const maps = useAtomValue(mapsAtom);
   const currentMap = maps[currentMapIndex];
-  const centerOfMap = {
-    x:
-      currentMap.worldCoords.x * tileSizePx +
-      (currentMap.size.width / 2) * tileSizePx,
-    y:
-      currentMap.worldCoords.y * tileSizePx +
-      (currentMap.size.height / 2) * tileSizePx,
-  };
-  const [currentPanning, setCurrentPanning] = useState(centerOfMap);
+  const [currentPanning, setCurrentPanning] = useAtom(currentPanningAtom);
+  const [zoom, setZoom] = useAtom(currentZoomAtom);
 
   const metaTiles = useAtomValue(metaTilesAtom);
   const hoveredMetaTileIndex = useAtomValue(hoveredMetaTileIndexAtom);
@@ -63,11 +56,9 @@ export function WorldmapEdit() {
       const remainingHeight = height - currentMap.size.height;
 
       const halfMapWidth =
-        currentMap.worldCoords.x * tileSizePx +
-        (currentMap.size.width / 2) * tileSizePx;
+        currentMap.worldCoords.x * zoom + (currentMap.size.width / 2) * zoom;
       const halfMapHeight =
-        currentMap.worldCoords.y * tileSizePx +
-        (currentMap.size.height / 2) * tileSizePx;
+        currentMap.worldCoords.y * zoom + (currentMap.size.height / 2) * zoom;
 
       const centerOfMap = {
         x: Math.floor(remainingWidth / 2 - halfMapWidth),
@@ -93,6 +84,33 @@ export function WorldmapEdit() {
           width={canvasSize.width}
           height={canvasSize.height}
           className="absolute top-0 left-0"
+          onWheel={(e) => {
+            e.evt.preventDefault();
+            e.evt.stopPropagation();
+            if (panning) return;
+
+            setZoom((prevZoom) => {
+              const isNegative = e.evt.deltaY < 0;
+              const newZoom = isNegative
+                ? Math.min(prevZoom + 1, 64)
+                : Math.max(prevZoom - 1, 1);
+
+              const centerOfView = {
+                x:
+                  canvasSize.width / 2 / prevZoom - currentPanning.x / prevZoom,
+                y:
+                  canvasSize.height / 2 / prevZoom -
+                  currentPanning.y / prevZoom,
+              };
+
+              setCurrentPanning({
+                x: -centerOfView.x * newZoom + canvasSize.width / 2,
+                y: -centerOfView.y * newZoom + canvasSize.height / 2,
+              });
+
+              return newZoom;
+            });
+          }}
           onMouseDown={(e) => {
             if (e.evt.button == MIDDLE_CLICK) {
               e.evt.preventDefault();
@@ -116,22 +134,25 @@ export function WorldmapEdit() {
             }
           }}
         >
-          <Layer imageSmoothingEnabled={false}>
+          <Layer
+            imageSmoothingEnabled={
+              zoom <= 8 ? true : false // allows seeing shapes that would disappear when zoomed out, due to pixelation
+            }
+          >
             <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
               const highlightCount =
                 metaTileSpottedInMap?.get(index)?.length ?? null;
 
               const isOutsideViewport =
-                currentPanning.x + tileSizePx * map.worldCoords.x >
+                currentPanning.x + zoom * map.worldCoords.x >
                   canvasSize.width ||
-                currentPanning.y + tileSizePx * map.worldCoords.y >
+                currentPanning.y + zoom * map.worldCoords.y >
                   canvasSize.height ||
-                currentPanning.x +
-                  tileSizePx * (map.worldCoords.x + map.size.width) <
+                currentPanning.x + zoom * (map.worldCoords.x + map.size.width) <
                   0 ||
                 currentPanning.y +
-                  tileSizePx * (map.worldCoords.y + map.size.height) <
+                  zoom * (map.worldCoords.y + map.size.height) <
                   0;
 
               if (isOutsideViewport) {
@@ -140,15 +161,16 @@ export function WorldmapEdit() {
 
               return (
                 <MapPreview
+                  fogOfWar
                   key={map.id}
                   mapIndex={index}
                   map={map}
                   tileSet={tileSet}
                   highlightCount={highlightCount}
-                  height={tileSizePx * map.size.height}
-                  width={tileSizePx * map.size.width}
-                  x={currentPanning.x + tileSizePx * map.worldCoords.x}
-                  y={currentPanning.y + tileSizePx * map.worldCoords.y}
+                  height={zoom * map.size.height}
+                  width={zoom * map.size.width}
+                  x={currentPanning.x + zoom * map.worldCoords.x}
+                  y={currentPanning.y + zoom * map.worldCoords.y}
                 />
               );
             })}
@@ -158,8 +180,8 @@ export function WorldmapEdit() {
             width={canvasSize.width}
             height={canvasSize.height}
             mapIndex={currentMapIndex}
-            x={currentPanning.x + tileSizePx * currentMap.worldCoords.x}
-            y={currentPanning.y + tileSizePx * currentMap.worldCoords.y}
+            x={currentPanning.x + zoom * currentMap.worldCoords.x}
+            y={currentPanning.y + zoom * currentMap.worldCoords.y}
           />
         </Stage>
       </div>
