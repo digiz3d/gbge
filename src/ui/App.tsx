@@ -25,7 +25,7 @@ function App() {
       document.removeEventListener("copy", cpy);
       document.removeEventListener("paste", pst);
     };
-  }, []);
+  }, [Math.random()]);
 
   return (
     <main

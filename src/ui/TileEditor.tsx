@@ -5,13 +5,13 @@ import { tileSetsAtom } from "../state/tileset";
 import {
   currentSelectionAtom,
   selectedPaintIndexAtom,
-  selectedTabIndexAtom,
+  selectedTileSetTabIndexAtom,
 } from "../state/ui";
 import { Color, pixelToRgb } from "../state/tiles";
 import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../state/utils";
 
 export function TileEditor() {
-  const tab = useAtomValue(selectedTabIndexAtom);
+  const tab = useAtomValue(selectedTileSetTabIndexAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
   const [paintIndex, setPaintIndex] = useAtom(selectedPaintIndexAtom);
   const [isDrawing, setIsDrawing] = useState(false);

@@ -187,7 +187,6 @@ export function MapPreviewEditCanvas(props: {
     };
 
     const handleSelectionInit = (e: MouseEvent) => {
-      console.log("selectionInit");
       const rect = mapActualCanvas.getBoundingClientRect();
       const xx = Math.floor(e.clientX - rect.left - x);
       const yy = Math.floor(e.clientY - rect.top - y);
@@ -199,7 +198,6 @@ export function MapPreviewEditCanvas(props: {
     };
 
     const handleSelectionMove = (e: MouseEvent) => {
-      // console.log("selectionMove");
       const rect = mapActualCanvas.getBoundingClientRect();
       const xx = Math.floor(e.clientX - rect.left - x);
       const yy = Math.floor(e.clientY - rect.top - y);
@@ -257,7 +255,7 @@ export function MapPreviewEditCanvas(props: {
         mode: "mapTiles",
         tool: "selection",
         trigger: "manual",
-        width: maxX - minX,
+        width: Math.ceil(maxX / tileSizePx) - Math.floor(minX / tileSizePx),
       });
     };
 
@@ -377,14 +375,13 @@ export function MapPreviewEditCanvas(props: {
   }, [
     x,
     y,
-    map.size.width,
-    map.size.height,
     currentSelection,
     isGridVisible,
     isZoneVisible,
     tileSetTiles,
     highlightedMetaTilesIndexes,
     metaTiles,
+    map,
   ]);
 
   return (
@@ -422,8 +419,8 @@ function drawGrid(
   for (let i = 1; i < linesCountX; i++) {
     const xx = x + spacingX * i * linesCountX;
     ctx.beginPath();
-    ctx.moveTo(xx, y + 0);
-    ctx.lineTo(xx, y + mapTilesCountWidth * tileSizePx);
+    ctx.moveTo(xx, y);
+    ctx.lineTo(xx, y + mapTilesCountHeight * tileSizePx);
     ctx.stroke();
   }
 
@@ -432,8 +429,8 @@ function drawGrid(
   for (let i = 1; i < linesCountY; i++) {
     const yy = y + spacingY * i * linesCountY;
     ctx.beginPath();
-    ctx.moveTo(x + 0, yy);
-    ctx.lineTo(x + mapTilesCountHeight * tileSizePx, yy);
+    ctx.moveTo(x, yy);
+    ctx.lineTo(x + mapTilesCountWidth * tileSizePx, yy);
     ctx.stroke();
   }
 }

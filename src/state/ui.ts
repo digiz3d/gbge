@@ -21,7 +21,7 @@ export const currentSelectionAtom = atom<
   CurrentSelectionInPanel | CurrentSelectionInMapEditor
 >({ mode: "tile", index: 0, trigger: "manual", tool: "brush" });
 
-export const selectedTabIndexAtom = atom(0);
+export const selectedTileSetTabIndexAtom = atom(0);
 export const selectedPaintIndexAtom = atom<Color>(0);
 
 export const isVisibleMapGridAtom = atomWithToggle(true);

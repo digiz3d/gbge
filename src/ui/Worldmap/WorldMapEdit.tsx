@@ -70,8 +70,8 @@ export function WorldmapEdit() {
         (currentMap.size.height / 2) * tileSizePx;
 
       const centerOfMap = {
-        x: remainingWidth / 2 - halfMapWidth,
-        y: remainingHeight / 2 - halfMapHeight,
+        x: Math.floor(remainingWidth / 2 - halfMapWidth),
+        y: Math.floor(remainingHeight / 2 - halfMapHeight),
       };
       setCurrentPanning(centerOfMap);
     };
@@ -154,7 +154,7 @@ export function WorldmapEdit() {
             })}
           </Layer>
           <MapPreviewEditCanvas
-            key={currentMapIndex}
+            key={currentMapIndex + currentMap.tilesIndexes.join()}
             width={canvasSize.width}
             height={canvasSize.height}
             mapIndex={currentMapIndex}
