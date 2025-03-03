@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/digiz3d/gbge/compare/v0.8.0...v0.9.0) (2025-03-03)
+
+
+### Features
+
+* shared zoom and panning ([#28](https://github.com/digiz3d/gbge/issues/28)) ([869a742](https://github.com/digiz3d/gbge/commit/869a74241b56b7585967d116e65617eb2e6ab44f))
+
 ## [0.8.0](https://github.com/digiz3d/gbge/compare/v0.7.1...v0.8.0) (2025-03-03)
 
 
