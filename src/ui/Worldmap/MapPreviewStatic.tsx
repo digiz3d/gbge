@@ -7,6 +7,7 @@ import Konva from "konva";
 import { MapEntity } from "../../state/map";
 
 export function MapPreviewStatic(props: {
+  fogOfWar?: boolean;
   map: MapEntity;
   tileSet: TileSet;
   x: number;
@@ -19,6 +20,7 @@ export function MapPreviewStatic(props: {
   onMouseMove?: (evt: Konva.KonvaEventObject<MouseEvent>) => void;
 }) {
   const {
+    fogOfWar,
     map,
     tileSet,
     x,
@@ -37,6 +39,8 @@ export function MapPreviewStatic(props: {
 
   return (
     <Image
+      opacity={fogOfWar ? 0.5 : 1}
+      fill={"black"}
       x={x}
       y={y}
       width={width}

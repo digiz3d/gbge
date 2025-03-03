@@ -12,6 +12,7 @@ import { MapGrid } from "./MapGrid";
 import { MapPreviewStatic } from "./MapPreviewStatic";
 
 export function MapPreview(props: {
+  fogOfWar?: boolean;
   mapIndex: number;
   map: MapEntity;
   tileSet: TileSet;
@@ -29,6 +30,7 @@ export function MapPreview(props: {
   const areMapIdsVisible = useAtomValue(areMapIdsVisibleAtom);
   const currentEditedMapIndex = useAtomValue(currentEditedMapIndexAtom);
   const {
+    fogOfWar,
     mapIndex,
     map,
     tileSet,
@@ -53,6 +55,7 @@ export function MapPreview(props: {
     <>
       {isEditingMap ? null : (
         <MapPreviewStatic
+          fogOfWar={fogOfWar}
           map={map}
           tileSet={tileSet}
           x={x}

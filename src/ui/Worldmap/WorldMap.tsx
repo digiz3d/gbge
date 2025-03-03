@@ -15,8 +15,8 @@ import {
 import { tileSetsAtom } from "../../state/tileset";
 import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../../state/utils";
 
-const currentPanningAtom = atom({ x: 0, y: 0 });
-const currentZoomAtom = atom(8);
+export const currentPanningAtom = atom({ x: 0, y: 0 });
+export const currentZoomAtom = atom(8);
 
 export function Worldmap() {
   const [currentPanning, setCurrentPanning] = useAtom(currentPanningAtom);
@@ -113,12 +113,12 @@ export function Worldmap() {
           onWheel={(e) => {
             e.evt.preventDefault();
             e.evt.stopPropagation();
-            if (grabbing) return;
+            if (grabbing || panning) return;
 
             setZoom((prevZoom) => {
               const isNegative = e.evt.deltaY < 0;
               const newZoom = isNegative
-                ? Math.min(prevZoom + 1, 16)
+                ? Math.min(prevZoom + 1, 64)
                 : Math.max(prevZoom - 1, 1);
 
               const centerOfView = {
