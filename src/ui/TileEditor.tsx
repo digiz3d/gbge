@@ -5,13 +5,13 @@ import { tileSetsAtom } from "../state/tileset";
 import {
   currentSelectionAtom,
   selectedPaintIndexAtom,
-  selectedTabIndexAtom,
+  selectedTileSetTabIndexAtom,
 } from "../state/ui";
 import { Color, pixelToRgb } from "../state/tiles";
 import { LEFT_CLICK, MIDDLE_CLICK, RIGHT_CLICK } from "../state/utils";
 
 export function TileEditor() {
-  const tab = useAtomValue(selectedTabIndexAtom);
+  const tab = useAtomValue(selectedTileSetTabIndexAtom);
   const currentSelection = useAtomValue(currentSelectionAtom);
   const [paintIndex, setPaintIndex] = useAtom(selectedPaintIndexAtom);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -48,6 +48,18 @@ export function TileEditor() {
       <div className="h-[256px] w-[256px]">Select a tile to start editing</div>
     );
   }
+
+  console.log(
+    draft
+      .reduce((acc: string[], cur: number, index: number) => {
+        if (index % 8 === 0) {
+          acc.push("");
+        }
+        acc[acc.length - 1] += cur + ", ";
+        return acc;
+      }, [])
+      .join("\n")
+  );
 
   return (
     <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit overflow-hidden">

@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { makeFilledArray } from "./utils";
 import { Color, TileSet } from "./tiles";
-import { selectedTabIndexAtom } from "./ui";
+import { selectedTileSetTabIndexAtom } from "./ui";
 
 const initialTileSets: TileSet[] = [
   {
@@ -11,15 +11,10 @@ const initialTileSets: TileSet[] = [
 ];
 export const tileSetsAtom = atom(initialTileSets);
 
-export const currentTileSetAtom = atom((get) => {
-  const currentTileSetIndex = get(selectedTabIndexAtom);
+export const currentTileSetTilesAtom = atom((get) => {
+  const currentTileSetIndex = get(selectedTileSetTabIndexAtom);
   const tileSets = get(tileSetsAtom);
 
   const tileSet = tileSets[currentTileSetIndex];
-  return tileSet;
-});
-
-export const currentTileSetTilesAtom = atom((get) => {
-  const tileSet = get(currentTileSetAtom);
   return tileSet.tiles;
 });

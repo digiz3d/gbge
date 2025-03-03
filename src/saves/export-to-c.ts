@@ -8,14 +8,14 @@ import {
 } from "../state/metatile";
 import { MapEntity, mapsAtom } from "../state/map";
 import { tileSetsAtom } from "../state/tileset";
-import { selectedTabIndexAtom } from "../state/ui";
+import { selectedTileSetTabIndexAtom } from "../state/ui";
 import { Tile } from "../state/tiles";
 
 const filtersC = [{ name: "C file", extensions: ["c"] }];
 const filtersH = [{ name: "H file", extensions: ["h"] }];
 
 export const exportToCAtom = atom(null, async (get, set) => {
-  const currentTileSetIndex = get(selectedTabIndexAtom);
+  const currentTileSetIndex = get(selectedTileSetTabIndexAtom);
   const tileSets = get(tileSetsAtom);
   const tileSet = tileSets[currentTileSetIndex];
 

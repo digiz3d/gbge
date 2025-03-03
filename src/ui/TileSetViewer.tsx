@@ -6,12 +6,12 @@ import { useMemo } from "react";
 import { WritableAtom } from "jotai";
 import { SetStateAction } from "jotai";
 import { tileSetsAtom } from "../state/tileset";
-import { currentSelectionAtom, selectedTabIndexAtom } from "../state/ui";
+import { currentSelectionAtom, selectedTileSetTabIndexAtom } from "../state/ui";
 import { Tile } from "../state/tiles";
 
 export function TileSetViewer() {
   const [currentSelection, setCurrentSelection] = useAtom(currentSelectionAtom);
-  const tab = useAtomValue(selectedTabIndexAtom);
+  const tab = useAtomValue(selectedTileSetTabIndexAtom);
 
   const tiles = useAtomValue(
     useMemo(() => {
@@ -42,9 +42,14 @@ export function TileSetViewer() {
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
-            onClick={() =>
-              setCurrentSelection({ mode: "tile", index, trigger: "manual" })
-            }
+            onClick={() => {
+              setCurrentSelection((x) => ({
+                index,
+                mode: "tile",
+                tool: x.tool === "selection" ? "brush" : x.tool,
+                trigger: "manual",
+              }));
+            }}
           >
             <TileViewerButSmall tileAtom={tileAtom} />
           </div>

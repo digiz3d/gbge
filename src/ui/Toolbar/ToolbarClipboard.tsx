@@ -1,16 +1,29 @@
 import { Belt } from "./Belt";
 import { BeltTileButton } from "./Belt/BeltTileButton";
 import { useAtomValue } from "jotai";
-import { copiedTileAtom } from "../../state/clipboard";
+import { copiedTilesAtom } from "../../state/clipboard";
 import { Tile } from "../../state/tiles";
+import { tileSetsAtom } from "../../state/tileset";
+import { selectedTileSetTabIndexAtom } from "../../state/ui";
 
 export function ToolbarClipboard() {
-  const copiedTile = useAtomValue(copiedTileAtom);
+  const copiedTile = useAtomValue(copiedTilesAtom);
+  const tileSetIndex = useAtomValue(selectedTileSetTabIndexAtom);
+  const tileSets = useAtomValue(tileSetsAtom);
+
+  const tileIndex = copiedTile?.tilesIndexes[0];
 
   return (
     <div className="self-center">
       <Belt>
-        <BeltTileButton onClick={() => {}} tile={copiedTile ?? emptyTile} />
+        <BeltTileButton
+          onClick={() => {}}
+          tile={
+            tileIndex !== undefined
+              ? tileSets[tileSetIndex].tiles[tileIndex]
+              : emptyTile
+          }
+        />
       </Belt>
     </div>
   );

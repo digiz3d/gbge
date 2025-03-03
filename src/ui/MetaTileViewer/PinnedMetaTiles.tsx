@@ -58,6 +58,7 @@ export function PinnedMetaTiles() {
                   mode: "metaTile",
                   index,
                   trigger: "manual",
+                  tool: "brush",
                 });
               } else if (e.button === RIGHT_CLICK) {
                 e.preventDefault();

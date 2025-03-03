@@ -3,7 +3,7 @@ import { confirm, message } from "@tauri-apps/plugin-dialog";
 
 import { tileSetsAtom } from "./tileset";
 import { makeFilledArray } from "./utils";
-import { currentEditedMapIndexAtom, currentSelectionAtom } from "./ui";
+import { currentEditedMapIndexAtom } from "./ui";
 
 export type MapEntity = {
   id: string;
@@ -69,33 +69,13 @@ export const createMapAtom = atom(
 
     if (maps.find((map) => map.id === id)) {
       await message(
-        `A map with the ID "${id}" already exists. Please providea different ID.`
+        `A map with the ID "${id}" already exists. Please provide a different ID.`
       );
       return false;
     }
 
     set(mapsAtom, [...get(mapsAtom), newMap]);
     return true;
-  }
-);
-
-export const setMapTileIndexesAtom = atom(
-  null,
-  (get, set, tileX: number, tileY: number) => {
-    const currentSelection = get(currentSelectionAtom);
-    const currentMapIndex = get(currentEditedMapIndexAtom);
-    if (currentMapIndex === null) return;
-    const { height: MAP_HEIGHT, width: MAP_WIDTH } = get(mapSizeAtom);
-
-    if (currentSelection.mode !== "tile") return;
-    if (tileX < 0 || tileX >= MAP_WIDTH || tileY < 0 || tileY >= MAP_HEIGHT) {
-      return;
-    }
-
-    const tileIndex = tileY * MAP_WIDTH + tileX;
-    const draft = structuredClone(get(mapsAtom));
-    draft[currentMapIndex].tilesIndexes[tileIndex] = currentSelection.index;
-    set(mapsAtom, draft);
   }
 );
 

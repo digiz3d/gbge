@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import "./App.css";
 import { Layout } from "./Layout";
 import { Toolbar } from "./Toolbar";
 import { useSetAtom } from "jotai";
-import { copyTriggerAtom } from "../state/clipboard";
-import { pasteTriggerAtom } from "../state/clipboard";
+import { copyTriggerAtom, pasteTriggerAtom } from "../state/clipboard";
+
+import "./App.css";
 
 function App() {
   const copyTrigger = useSetAtom(copyTriggerAtom);
@@ -25,7 +25,7 @@ function App() {
       document.removeEventListener("copy", cpy);
       document.removeEventListener("paste", pst);
     };
-  }, []);
+  }, [Math.random()]);
 
   return (
     <main
