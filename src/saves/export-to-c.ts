@@ -114,12 +114,12 @@ function mapsSourceFile(metaTiles: MetaTile[], maps: MapEntity[]) {
 const unsigned char metaTiles[] =
 {
   ${metaTiles
-    .map(
-      (metaTile) =>
-        `${metaTile.tileIndexes
-          .map((x) => `0x${x.toString(16).padStart(2, "0")}`)
-          .join(",")}`
-    )
+    .map((metaTile) => {
+      const t = metaTile.tileIndexes;
+      return `${[t[0], t[2], t[1], t[3]]
+        .map((x) => `0x${x.toString(16).padStart(2, "0")}`)
+        .join(",")}`;
+    })
     .join(",\n  ")}
 };
 
@@ -150,7 +150,7 @@ function tileHeaderFile(name: string, tileCount: number) {
 #ifndef __${name}_h_INCLUDE
 #define __${name}_h_INCLUDE
 
-extern const unsigned char ${name}[];
+extern const unsigned char ${name}_ts[];
 #define ${name}Len ${tileCount}
 
 #endif
