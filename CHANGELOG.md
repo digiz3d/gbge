@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/digiz3d/gbge/compare/v0.9.0...v0.9.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* properly export meta tiles ([#30](https://github.com/digiz3d/gbge/issues/30)) ([3dbd230](https://github.com/digiz3d/gbge/commit/3dbd2305493cbbebfd43cd95ef1d836ac03c54ea))
+
 ## [0.9.0](https://github.com/digiz3d/gbge/compare/v0.8.0...v0.9.0) (2025-03-03)
 
 
