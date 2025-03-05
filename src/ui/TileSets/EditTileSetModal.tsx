@@ -55,8 +55,8 @@ export function EditTileSetModal({
               setHasClickedDelete(true);
               return;
             }
-            await deleteTileSet(isOpenFor);
             close();
+            await deleteTileSet(isOpenFor);
           }}
         >
           {hasClickedDelete ? "Confirm delete" : "Delete"}

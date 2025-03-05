@@ -53,11 +53,12 @@ export const updateTileSetAtom = atom(
 export const deleteTileSetAtom = atom(null, async (get, set, index: number) => {
   const tileSets = get(tileSetsAtom);
   if (tileSets.length === 1) return false;
-  tileSets.splice(index, 1);
+  const draft = structuredClone(tileSets);
+  draft.splice(index, 1);
   const currentTileSetIndex = get(selectedTileSetTabIndexAtom);
-  if (currentTileSetIndex >= tileSets.length) {
-    set(selectedTileSetTabIndexAtom, tileSets.length - 1);
+  if (currentTileSetIndex >= index) {
+    set(selectedTileSetTabIndexAtom, currentTileSetIndex - 1);
   }
-  set(tileSetsAtom, tileSets);
+  set(tileSetsAtom, draft);
   return true;
 });
