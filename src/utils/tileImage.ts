@@ -3,9 +3,11 @@ import { LRUCache } from "lru-cache";
 import { MapEntity } from "../state/map";
 import { Color, pixelToRgb, Tile, TileSet } from "../state/tiles";
 
-const mapImageCache = new LRUCache<string, string>({ max: 128 });
-const tileCanvasCache = new LRUCache<string, HTMLCanvasElement>({ max: 128 });
-const tileImageCache = new LRUCache<string, string>({ max: 128 });
+export const mapImageCache = new LRUCache<string, string>({ max: 128 });
+export const tileCanvasCache = new LRUCache<string, HTMLCanvasElement>({
+  max: 128,
+});
+export const tileImageCache = new LRUCache<string, string>({ max: 128 });
 
 const TILE_PIXEL_SIZE = 8;
 
@@ -36,15 +38,16 @@ export function createTileImage(tile: Tile): string {
 
 export function createMapImage(map: MapEntity, tileSet: TileSet): string {
   const cacheKey = `${JSON.stringify(map.tilesIndexes)}-${JSON.stringify(
-    tileSet
+    tileSet.name
   )}`;
+  console.log(cacheKey);
   const cached = mapImageCache.get(cacheKey);
   if (cached) return cached;
 
   const canvas = document.createElement("canvas");
   canvas.width = map.size.width * TILE_PIXEL_SIZE;
   canvas.height = map.size.height * TILE_PIXEL_SIZE;
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const ctx = canvas.getContext("2d");
   if (!ctx) return "";
 
   map.tilesIndexes.forEach((tileIndex, i) => {
@@ -70,6 +73,7 @@ export function createMapImage(map: MapEntity, tileSet: TileSet): string {
 
   const dataUrl = canvas.toDataURL();
   mapImageCache.set(cacheKey, dataUrl);
+  canvas.remove();
   return dataUrl;
 }
 

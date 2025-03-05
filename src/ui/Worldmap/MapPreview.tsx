@@ -2,18 +2,13 @@ import Konva from "konva";
 import { Rect, Text } from "react-konva";
 import { useAtomValue } from "jotai";
 import { MapEntity } from "../../state/map";
-import {
-  areMapIdsVisibleAtom,
-  currentEditedMapIndexAtom,
-  isVisibleMapGridAtom,
-} from "../../state/ui";
+import { areMapIdsVisibleAtom, isVisibleMapGridAtom } from "../../state/ui";
 import { TileSet } from "../../state/tiles";
 import { MapGrid } from "./MapGrid";
 import { MapPreviewStatic } from "./MapPreviewStatic";
 
 export function MapPreview(props: {
   fogOfWar?: boolean;
-  mapIndex: number;
   map: MapEntity;
   tileSet: TileSet;
   highlightCount: number | null;
@@ -28,10 +23,8 @@ export function MapPreview(props: {
 }) {
   const isGridVisible = useAtomValue(isVisibleMapGridAtom);
   const areMapIdsVisible = useAtomValue(areMapIdsVisibleAtom);
-  const currentEditedMapIndex = useAtomValue(currentEditedMapIndexAtom);
   const {
     fogOfWar,
-    mapIndex,
     map,
     tileSet,
     highlightCount,
@@ -44,7 +37,6 @@ export function MapPreview(props: {
     onMouseLeave,
     onMouseMove,
   } = props;
-  const isEditingMap = mapIndex === currentEditedMapIndex;
 
   const textX = x + 2;
   const textY = y + 2;
@@ -53,22 +45,20 @@ export function MapPreview(props: {
 
   return (
     <>
-      {isEditingMap ? null : (
-        <MapPreviewStatic
-          fogOfWar={fogOfWar}
-          map={map}
-          tileSet={tileSet}
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          onMouseDown={onMouseDown}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onMouseMove={onMouseMove}
-        />
-      )}
-      {isEditingMap && isGridVisible && (
+      <MapPreviewStatic
+        fogOfWar={fogOfWar}
+        map={map}
+        tileSet={tileSet}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        onMouseDown={onMouseDown}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onMouseMove={onMouseMove}
+      />
+      {isGridVisible && (
         <MapGrid x={x} y={y} width={width} height={height} map={map} />
       )}
       {areMapIdsVisible && (

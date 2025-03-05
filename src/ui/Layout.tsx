@@ -1,5 +1,5 @@
 import { MetaTileViewer } from "./MetaTileViewer/MetaTileViewer";
-import { TileSetViewer } from "./TileSetViewer";
+import { TileSetViewer } from "./TileSets/TileSetViewer";
 import { TileEditor } from "./TileEditor";
 import { MetaTileCompute } from "./MetaTileViewer/MetaTileCompute";
 import { currentEditedMapIndexAtom } from "../state/ui";

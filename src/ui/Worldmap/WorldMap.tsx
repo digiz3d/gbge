@@ -1,6 +1,9 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { focusToEditMapAtom } from "../../state/ui";
+import {
+  focusToEditMapAtom,
+  selectedTileSetTabIndexAtom,
+} from "../../state/ui";
 import { WorldMapInfo } from "./WorldMapInfo";
 
 import { Stage, Layer, Rect } from "react-konva";
@@ -31,7 +34,9 @@ export function Worldmap() {
 
   const deleteMap = useSetAtom(deleteMapByIndexAtom);
   const [hoverMapIndex, setHoverMapIndex] = useState<number | null>(null);
-  const [tileSet] = useAtomValue(tileSetsAtom);
+  const tileSets = useAtomValue(tileSetsAtom);
+  const selectedTileSetTabIndex = useAtomValue(selectedTileSetTabIndexAtom);
+  const tileSet = tileSets[selectedTileSetTabIndex];
   const containerRef = useRef<HTMLDivElement>(null);
   const [panning, setPanning] = useState(false);
   const [grabbing, setGrabbing] = useState<{
@@ -202,7 +207,6 @@ export function Worldmap() {
 
               return (
                 <MapPreview
-                  mapIndex={index}
                   key={map.id}
                   map={map}
                   tileSet={tileSet}
