@@ -43,8 +43,6 @@ export const updateTileSetAtom = atom(
   null,
   async (get, set, index: number, newName: string) => {
     const tileSets = get(tileSetsAtom);
-    const tileSet = tileSets[index];
-    if (!tileSet) return false;
     const draft = structuredClone(tileSets);
     draft[index].name = newName;
     set(tileSetsAtom, draft);
