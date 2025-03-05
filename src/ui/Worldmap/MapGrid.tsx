@@ -23,8 +23,8 @@ export function MapGrid({
   const linesCountY =
     map.size.height / (currentSelection.mode === "tile" ? 1 : 2);
 
-  const intervalX = height / linesCountX;
-  const intervalY = width / linesCountY;
+  const intervalX = width / linesCountX;
+  const intervalY = height / linesCountY;
 
   return (
     <>
