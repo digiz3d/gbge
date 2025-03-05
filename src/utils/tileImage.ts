@@ -40,7 +40,6 @@ export function createMapImage(map: MapEntity, tileSet: TileSet): string {
   const cacheKey = `${JSON.stringify(map.tilesIndexes)}-${JSON.stringify(
     tileSet
   )}`;
-  console.log(cacheKey);
   const cached = mapImageCache.get(cacheKey);
   if (cached) return cached;
 
