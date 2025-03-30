@@ -1,6 +1,9 @@
 import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { currentEditedMapIndexAtom } from "../../state/ui";
+import {
+  currentEditedMapIndexAtom,
+  selectedTileSetTabIndexAtom,
+} from "../../state/ui";
 
 import { Stage, Layer } from "react-konva";
 import { MapPreview } from "./MapPreview";
@@ -27,7 +30,9 @@ export function WorldmapEdit() {
       ? metaTiles[hoveredMetaTileIndex].spottedAt
       : null;
 
-  const [tileSet] = useAtomValue(tileSetsAtom);
+  const tileSets = useAtomValue(tileSetsAtom);
+  const selectedTileSetTabIndex = useAtomValue(selectedTileSetTabIndexAtom);
+  const tileSet = tileSets[selectedTileSetTabIndex];
   const containerRef = useRef<HTMLDivElement>(null);
   const [panning, setPanning] = useState(false);
 
@@ -141,6 +146,9 @@ export function WorldmapEdit() {
           >
             <WorldMapOrigin panning={currentPanning} canvasSize={canvasSize} />
             {maps.map((map, index) => {
+              if (index === currentMapIndex) {
+                return null;
+              }
               const highlightCount =
                 metaTileSpottedInMap?.get(index)?.length ?? null;
 
@@ -163,7 +171,6 @@ export function WorldmapEdit() {
                 <MapPreview
                   fogOfWar
                   key={map.id}
-                  mapIndex={index}
                   map={map}
                   tileSet={tileSet}
                   highlightCount={highlightCount}
