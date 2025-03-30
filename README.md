@@ -25,3 +25,4 @@ Metatiles are a byproduct, allowing you to think and create freely.
 
 - Click to fill
 - Export all tilesets at once rather than only the active one
+- Limit tileset export to only used tiles
