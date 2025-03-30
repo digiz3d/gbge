@@ -23,6 +23,8 @@ You can also copy/paste part of maps using the selection tool.
 
 ![export to C files](./doc/c-export.png)
 
+Also generated header files for the tile sets and maps.
+
 ### Rearrange maps
 
 ![rearrange maps](./doc/rearrange-maps.png)
