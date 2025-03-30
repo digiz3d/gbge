@@ -1,7 +1,7 @@
 # GBGE
 
 GBGE is a tool for creating and editing Game Boy maps.  
-Metatiles are a byproduct, allowing you to think and create freely.
+Metatiles are a byproduct, allowing you to think and create freely. (You can still paint using metatiles if you like)
 
 ## Features
 
@@ -13,7 +13,9 @@ Metatiles are a byproduct, allowing you to think and create freely.
 
 ![draw map](./doc/draw-map.png)
 
-### Compute, count and optimize metatiles
+You can also copy/paste part of maps using the selection tool.
+
+### Compute, count and optimize metatiles usage
 
 ![optimize metatiles](./doc/optimize-metatiles.png)
 
@@ -21,8 +23,13 @@ Metatiles are a byproduct, allowing you to think and create freely.
 
 ![export to C files](./doc/c-export.png)
 
+### Rearrange maps
+
+![rearrange maps](./doc/rearrange-maps.png)
+
 ## Missing features / todo
 
 - Click to fill
 - Export all tilesets at once rather than only the active one
 - Limit tileset export to only used tiles
+- Undo/redo
