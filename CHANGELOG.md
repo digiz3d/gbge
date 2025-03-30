@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/digiz3d/gbge/compare/v0.10.0...v0.10.1) (2025-03-30)
+
+
+### Bug Fixes
+
+* default export filenames and doc ([#34](https://github.com/digiz3d/gbge/issues/34)) ([7683359](https://github.com/digiz3d/gbge/commit/7683359a6008e90d8ef013af167331f83030d63b))
+
 ## [0.10.0](https://github.com/digiz3d/gbge/compare/v0.9.1...v0.10.0) (2025-03-30)
 
 
