@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.2](https://github.com/digiz3d/gbge/compare/v0.10.1...v0.10.2) (2025-03-30)
+
+
+### Bug Fixes
+
+* update dependencies ([#37](https://github.com/digiz3d/gbge/issues/37)) ([03a437e](https://github.com/digiz3d/gbge/commit/03a437e4b161cf41c908b2cbcaac602630586cee))
+
 ## [0.10.1](https://github.com/digiz3d/gbge/compare/v0.10.0...v0.10.1) (2025-03-30)
 
 
