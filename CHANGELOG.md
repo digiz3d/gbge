@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/digiz3d/gbge/compare/v0.9.1...v0.10.0) (2025-03-30)
+
+
+### Features
+
+* support multiple tilesets ([#32](https://github.com/digiz3d/gbge/issues/32)) ([71fef61](https://github.com/digiz3d/gbge/commit/71fef61a7b5f3894946994dba65687cd51fab557))
+
 ## [0.9.1](https://github.com/digiz3d/gbge/compare/v0.9.0...v0.9.1) (2025-03-04)
 
 
