@@ -34,7 +34,6 @@ export function MapPreviewStatic(props: {
   } = props;
 
   const url = useMemo(() => createMapImage(map, tileSet), [map, tileSet]);
-
   const [img] = useImage(url);
 
   return (

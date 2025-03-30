@@ -1,17 +1,27 @@
-import { pixelToRgb, Tile } from "../state/tiles";
+import useImage from "use-image";
+import { Tile } from "../state/tiles";
+import { useMemo } from "react";
+import { createTileImage } from "../utils/tileImage";
+import { Image, Layer, Stage } from "react-konva";
 
 export function TileViewerButSmall({ tile }: { tile: Tile }) {
+  const url = useMemo(() => createTileImage(tile), [tile]);
+
+  const [img] = useImage(url);
+
+  if (!img) {
+    return null;
+  }
+
   return (
-    <div className="grid grid-cols-8 grid-rows-8 w-fit h-fit">
-      {tile.map((pixel, i) => (
-        <div
-          className="h-[8px] w-[8px]"
-          key={i}
-          style={{
-            backgroundColor: pixelToRgb[pixel],
-          }}
-        />
-      ))}
-    </div>
+    <Stage
+      className="grid grid-cols-1 grid-rows-1 w-[64px] h-[64px]"
+      height={64}
+      width={64}
+    >
+      <Layer imageSmoothingEnabled={false}>
+        <Image image={img} height={64} width={64} />
+      </Layer>
+    </Stage>
   );
 }

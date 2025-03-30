@@ -16,12 +16,12 @@ export function TileSetTabs() {
   >(null);
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-1 flex-wrap max-w-full">
       {tileSets.map((tileSet, index) => {
         return (
           <div
             key={index}
-            className={`cursor-pointer inline-block p-1 ${
+            className={`cursor-pointer p-1 ${
               index === tab ? "bg-red-200" : ""
             }`}
             onMouseDown={(e) => {
