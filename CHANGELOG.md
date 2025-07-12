@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/digiz3d/gbge/compare/v0.10.2...v0.11.0) (2025-07-12)
+
+
+### Features
+
+* display selected tile coordinates ([#39](https://github.com/digiz3d/gbge/issues/39)) ([a78256a](https://github.com/digiz3d/gbge/commit/a78256af5943a807dff9e901955a8a69d0a460b5))
+
 ## [0.10.2](https://github.com/digiz3d/gbge/compare/v0.10.1...v0.10.2) (2025-03-30)
 
 
