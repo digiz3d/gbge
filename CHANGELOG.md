@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0](https://github.com/digiz3d/gbge/compare/v0.11.0...v0.12.0) (2025-07-14)
+
+
+### Features
+
+* export to PNG ([#43](https://github.com/digiz3d/gbge/issues/43)) ([9ad3eb0](https://github.com/digiz3d/gbge/commit/9ad3eb05eb66d76e376e110bfc098d9fc0ba384e))
+* move export/import menu into its own modal ([#41](https://github.com/digiz3d/gbge/issues/41)) ([716b3f0](https://github.com/digiz3d/gbge/commit/716b3f0df7ead4d761d885d294cef3858b0bbbf1))
+
 ## [0.11.0](https://github.com/digiz3d/gbge/compare/v0.10.2...v0.11.0) (2025-07-12)
 
 
