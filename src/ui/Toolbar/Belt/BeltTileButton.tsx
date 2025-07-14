@@ -6,7 +6,7 @@ export function BeltTileButton({
   tile,
 }: {
   colors?: string[];
-  onClick: () => void;
+  onClick?: () => void;
   tile: Tile;
 }) {
   return (
