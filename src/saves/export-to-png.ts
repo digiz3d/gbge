@@ -39,8 +39,6 @@ export const exportToPNGAtom = atom(null, async (get, set) => {
   ctx.canvas.width = (maxX - minX) * TILE_SIZE;
   ctx.canvas.height = (maxY - minY) * TILE_SIZE;
 
-  console.log(maxX, minX, maxY, minY);
-
   for (let i = 0; i < maps.length; i++) {
     const map = maps[i];
     const { x, y } = map.worldCoords;
