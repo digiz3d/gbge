@@ -31,8 +31,8 @@ export function ImportExportModal({
 
         <button
           className="flex align-center gap-1 cursor-pointer"
-          onClick={() => {
-            loadMaps();
+          onClick={async () => {
+            await loadMaps();
             close();
           }}
         >
@@ -42,8 +42,8 @@ export function ImportExportModal({
 
         <button
           className="flex align-center gap-1 cursor-pointer"
-          onClick={() => {
-            saveMaps();
+          onClick={async () => {
+            await saveMaps();
             close();
           }}
         >
@@ -53,8 +53,8 @@ export function ImportExportModal({
 
         <button
           className="flex align-center gap-1 cursor-pointer"
-          onClick={() => {
-            loadTileSet();
+          onClick={async () => {
+            await loadTileSet();
             close();
           }}
         >
@@ -64,8 +64,8 @@ export function ImportExportModal({
 
         <button
           className="flex align-center gap-1 cursor-pointer"
-          onClick={() => {
-            saveTileSet();
+          onClick={async () => {
+            await saveTileSet();
             close();
           }}
         >
@@ -75,7 +75,10 @@ export function ImportExportModal({
 
         <button
           className="flex align-center gap-1 cursor-pointer"
-          onClick={exportToC}
+          onClick={async () => {
+            await exportToC();
+            close();
+          }}
         >
           <BeltTileButton tile={exportToCIcon} />
           <span className="self-center">Export to C</span>
