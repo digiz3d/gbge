@@ -5,6 +5,7 @@ import { Modal } from "./Modal";
 import type { Tile } from "../../state/tiles";
 import { loadTileSetsAtom, saveTileSetsAtom } from "../../saves/save-tileset";
 import { exportToCAtom } from "../../saves/export-to-c";
+import { exportToPNGAtom } from "../../saves/export-to-png";
 
 export function ImportExportModal({
   close,
@@ -20,6 +21,7 @@ export function ImportExportModal({
   const loadTileSet = useSetAtom(loadTileSetsAtom);
   const saveTileSet = useSetAtom(saveTileSetsAtom);
   const exportToC = useSetAtom(exportToCAtom);
+  const exportToPNG = useSetAtom(exportToPNGAtom);
 
   return (
     <Modal onClick={close}>
@@ -82,6 +84,17 @@ export function ImportExportModal({
         >
           <BeltTileButton tile={exportToCIcon} />
           <span className="self-center">Export to C</span>
+        </button>
+
+        <button
+          className="flex align-center gap-1 cursor-pointer"
+          onClick={async () => {
+            await exportToPNG();
+            close();
+          }}
+        >
+          <BeltTileButton tile={exportToPNGIcon} />
+          <span className="self-center">Export to PNG</span>
         </button>
       </div>
     </Modal>
@@ -146,4 +159,16 @@ const exportToCIcon: Tile = [
   0, 0, 2, 3, 0, 2, 3, 0,
   0, 3, 0, 2, 3, 3, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
+];
+
+/* prettier-ignore */
+const exportToPNGIcon: Tile = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 2, 2, 0, 0, 0, 0, 3,
+  0, 2, 2, 0, 0, 0, 0, 3,
+  0, 0, 0, 0, 0, 0, 3, 3,
+  0, 0, 3, 0, 0, 0, 3, 3,
+  0, 0, 3, 3, 0, 3, 3, 3,
+  0, 3, 3, 3, 3, 3, 3, 3,
+  3, 3, 3, 3, 3, 3, 3, 3,
 ];
